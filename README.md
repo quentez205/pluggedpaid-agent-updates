@@ -1,0 +1,1 @@
+# Plugged&Paid Mac Agent Updates\n\nPublic signed release feed. Release assets are authenticated by the Mac Agent pinned public key and signed manifest; repository visibility is not a trust boundary.\n
