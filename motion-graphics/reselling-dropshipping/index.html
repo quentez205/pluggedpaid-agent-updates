@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reselling vs Drop Shipping</title>
+<style>
+  :root {
+    --bg: #0e1812;
+    --panel: #15241b;
+    --line: #2a4a36;
+    --text: #f2f5ef;
+    --muted: #9fb3a6;
+    --yellow: #f5c542;
+    --green: #4ade80;
+    --red: #ff7a6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  .glow {
+    position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(120px); opacity: .25;
+    background: var(--green); right: -300px; top: -300px; animation: drift 10s ease-in-out infinite alternate;
+  }
+  @keyframes drift { to { transform: translate(-200px, 150px); } }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+  .grow { transform-origin: left; animation: grow .8s ease-out both; animation-delay: var(--t); }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .chrome { position: absolute; left: 120px; top: 70px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .tag { display: inline-block; font-size: 26px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 12px 24px; border-radius: 999px; border: 2px solid var(--yellow); color: var(--yellow); }
+  .h1 { font-size: 118px; font-weight: 850; letter-spacing: -.04em; line-height: 1.02; }
+  .h2 { font-size: 84px; font-weight: 820; letter-spacing: -.03em; line-height: 1.05; }
+  .body { font-size: 36px; line-height: 1.4; color: var(--muted); }
+  .y { color: var(--yellow); }
+  .g { color: var(--green); }
+  .r { color: var(--red); }
+
+  /* Scene 1 */
+  .vs { display: flex; gap: 40px; align-items: center; font-size: 150px; font-weight: 900; letter-spacing: -.04em; }
+  .vs .slash { color: var(--yellow); font-weight: 300; }
+
+  /* Scene 2: reselling steps */
+  .steps3 { display: flex; gap: 60px; align-items: center; margin-top: 70px; }
+  .card { width: 420px; padding: 44px 40px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); text-align: left; }
+  .card .n { font-size: 80px; font-weight: 900; color: var(--yellow); line-height: 1; }
+  .card .l { font-size: 44px; font-weight: 780; margin-top: 16px; letter-spacing: -.02em; }
+  .card .s { font-size: 27px; color: var(--muted); margin-top: 12px; line-height: 1.35; }
+  .arrow { width: 90px; height: 6px; background: var(--line); position: relative; border-radius: 3px; }
+  .arrow::after { content: ""; position: absolute; right: -4px; top: -8px; width: 20px; height: 20px; border-right: 6px solid var(--line); border-top: 6px solid var(--line); transform: rotate(45deg); }
+
+  /* Scene 3: drop ship flow */
+  .flow { display: flex; align-items: center; gap: 26px; margin-top: 80px; }
+  .node { width: 300px; height: 210px; border-radius: 30px; background: var(--panel); border: 2px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+  .node .t { font-size: 40px; font-weight: 800; letter-spacing: -.02em; }
+  .node .d { font-size: 24px; color: var(--muted); margin-top: 10px; line-height: 1.3; }
+  .node.supplier { border-color: var(--green); }
+  .node.supplier .t { color: var(--green); }
+  .link { width: 110px; height: 6px; background: var(--line); border-radius: 3px; position: relative; transform-origin: left; }
+  .link::after { content: ""; position: absolute; right: -4px; top: -8px; width: 20px; height: 20px; border-right: 6px solid var(--line); border-top: 6px solid var(--line); transform: rotate(45deg); }
+
+  /* Scene 4: comparison table */
+  .table { display: grid; grid-template-columns: 520px 380px 380px; width: 1280px; margin-top: 60px; text-align: left; }
+  .table > div { padding: 26px 30px; border-bottom: 2px solid var(--line); font-size: 36px; }
+  .table .hdr { font-size: 26px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .table .lab { font-weight: 700; }
+
+  /* Scene 5: checklist */
+  .checks { display: flex; flex-direction: column; gap: 36px; width: 1100px; margin-top: 50px; text-align: left; }
+  .check { display: flex; align-items: center; gap: 36px; font-size: 52px; font-weight: 760; letter-spacing: -.02em; }
+  .box { position: relative; flex: none; width: 88px; height: 88px; border-radius: 20px; border: 5px solid var(--yellow); }
+  .box::after {
+    content: ""; position: absolute; left: 22px; top: 4px; width: 26px; height: 52px;
+    border-right: 11px solid var(--green); border-bottom: 11px solid var(--green);
+    transform: rotate(45deg) scale(0); transform-origin: center;
+    animation: tick .4s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--t2);
+  }
+  @keyframes tick { to { transform: rotate(45deg) scale(1); } }
+  .sub { font-size: 28px; color: var(--muted); font-weight: 500; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="chrome">Reselling &amp; drop shipping</div>
+  <div class="progress"></div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="vs rise" style="--t:.2s">
+        <span>Same</span><span class="slash">/</span><span class="y">Different</span>
+      </div>
+      <div class="h2 rise" style="--t:1.2s; margin-top:40px">Two ways to sell products you don't make.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · Reselling · 5–14s -->
+  <section class="scene" style="--s:5s; --d:9.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:5.3s">Option 1 · Reselling</span>
+      <div class="h2 rise" style="--t:5.5s; margin-top:34px">You buy it. You hold it. You ship it.</div>
+      <div class="steps3">
+        <div class="card pop" style="--t:6.6s"><div class="n">01</div><div class="l">Buy stock</div><div class="s">Retail, wholesale or secondhand, paid up front.</div></div>
+        <div class="arrow grow" style="--t:7.6s"></div>
+        <div class="card pop" style="--t:7.9s"><div class="n">02</div><div class="l">Store it</div><div class="s">Your space, your inventory, your risk.</div></div>
+        <div class="arrow grow" style="--t:8.9s"></div>
+        <div class="card pop" style="--t:9.2s"><div class="n">03</div><div class="l">Ship it</div><div class="s">You control packing and delivery time.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Drop shipping · 14–23s -->
+  <section class="scene" style="--s:14s; --d:9.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:14.3s">Option 2 · Drop shipping</span>
+      <div class="h2 rise" style="--t:14.5s; margin-top:34px">You sell it. A supplier ships it.</div>
+      <div class="flow">
+        <div class="node pop" style="--t:15.4s"><div class="t">Customer</div><div class="d">Places an order</div></div>
+        <div class="link grow" style="--t:16.4s"></div>
+        <div class="node pop" style="--t:16.6s"><div class="t">You</div><div class="d">Store and marketing. No stock.</div></div>
+        <div class="link grow" style="--t:17.6s"></div>
+        <div class="node supplier pop" style="--t:17.8s"><div class="t">Supplier</div><div class="d">Packs and ships direct</div></div>
+        <div class="link grow" style="--t:18.8s"></div>
+        <div class="node pop" style="--t:19s"><div class="t">Customer</div><div class="d">Receives the box</div></div>
+      </div>
+      <div class="body rise" style="--t:20.2s; margin-top:60px">You never touch the product. Your margin is what's left after the supplier's price.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Comparison · 23–33s -->
+  <section class="scene" style="--s:23s; --d:10.3s">
+    <div class="center">
+      <div class="h2 rise" style="--t:23.3s">What you're signing up for</div>
+      <div class="table">
+        <div class="hdr rise" style="--t:23.8s"></div>
+        <div class="hdr rise" style="--t:23.8s">Reselling</div>
+        <div class="hdr rise" style="--t:23.8s">Drop shipping</div>
+
+        <div class="lab rise" style="--t:24.6s">Upfront cost</div>
+        <div class="r rise" style="--t:24.6s">High</div>
+        <div class="g rise" style="--t:24.6s">Low</div>
+
+        <div class="lab rise" style="--t:26s">Inventory</div>
+        <div class="r rise" style="--t:26s">You hold it</div>
+        <div class="g rise" style="--t:26s">None</div>
+
+        <div class="lab rise" style="--t:27.4s">Shipping control</div>
+        <div class="g rise" style="--t:27.4s">High</div>
+        <div class="r rise" style="--t:27.4s">Depends on supplier</div>
+
+        <div class="lab rise" style="--t:28.8s">Margin per sale</div>
+        <div class="g rise" style="--t:28.8s">Can be higher</div>
+        <div class="r rise" style="--t:28.8s">Often thinner</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Before you start · 33–40s -->
+  <section class="scene" style="--s:33s; --d:7.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:33.3s">Before you start</span>
+      <div class="checks">
+        <div class="check rise" style="--t:33.8s"><span class="box" style="--t2:34.6s"></span><div>Margin after fees, shipping and returns<div class="sub">Check it on a real product, not a guess.</div></div></div>
+        <div class="check rise" style="--t:35.2s"><span class="box" style="--t2:36s"></span><div>Supplier reliability and return policy<div class="sub">Order a test. Time the delivery yourself.</div></div></div>
+        <div class="check rise" style="--t:36.6s"><span class="box" style="--t2:37.4s"></span><div>Platform rules and sales tax<div class="sub">Know what you're allowed to list and where tax applies.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 40–45s -->
+  <section class="scene hold" style="--s:40s; --d:5s">
+    <div class="center">
+      <div class="h1 rise" style="--t:40.3s">Pick the model that fits</div>
+      <div class="h1 rise y" style="--t:40.8s">your cash, your time, your risk.</div>
+      <div class="body rise" style="--t:41.8s; margin-top:50px">Start small. Measure the margin. Scale what works.</div>
+    </div>
+  </section>
+</body>
+</html>
