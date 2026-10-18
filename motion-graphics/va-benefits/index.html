@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Hire a Virtual Assistant</title>
+<style>
+  :root {
+    --bg: #0f1a17;
+    --panel: #172a24;
+    --line: #29463d;
+    --text: #f3f8f5;
+    --muted: #9bb8ad;
+    --mint: #5ee6b4;
+    --sand: #f4d58d;
+    --rose: #ff8c7a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  .aura { position: absolute; width: 900px; height: 900px; border-radius: 50%; filter: blur(150px); opacity: .25; background: var(--mint); right: -300px; top: -300px; animation: float 13s ease-in-out infinite alternate; }
+  @keyframes float { to { transform: translate(-200px, 180px); } }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+  .grow { transform-origin: left; animation: grow 1.4s cubic-bezier(.5,0,.2,1) both; animation-delay: var(--t); }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .chrome { position: absolute; left: 120px; top: 60px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--mint), var(--sand)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .h1 { font-size: 112px; font-weight: 850; letter-spacing: -.04em; line-height: 1.02; }
+  .h2 { font-size: 78px; font-weight: 820; letter-spacing: -.03em; line-height: 1.05; }
+  .body { font-size: 34px; line-height: 1.4; color: var(--muted); }
+  .tag { display: inline-block; font-size: 24px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: 10px 22px; border-radius: 999px; border: 2px solid var(--mint); color: var(--mint); }
+  .m { color: var(--mint); }
+  .s { color: var(--sand); }
+  .r { color: var(--rose); }
+
+  /* scene 2: day bar */
+  .day { width: 1500px; margin-top: 70px; }
+  .daylbl { display: flex; justify-content: space-between; font-size: 26px; color: var(--muted); font-weight: 600; margin-bottom: 18px; }
+  .bar { display: flex; height: 150px; border-radius: 30px; overflow: hidden; background: var(--panel); border: 2px solid var(--line); }
+  .seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; transform-origin: left; }
+  .seg.admin { background: var(--rose); color: #2a0f0a; animation: shrink 2.2s cubic-bezier(.5,0,.2,1) both; animation-delay: var(--t); }
+  .seg.focus { background: var(--mint); color: #06241a; animation: expand 2.2s cubic-bezier(.5,0,.2,1) both; animation-delay: var(--t); }
+  @keyframes shrink { from { width: 60%; } to { width: 18%; } }
+  @keyframes expand { from { width: 40%; } to { width: 82%; } }
+
+  /* scene 3: benefit cards */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; width: 1560px; margin-top: 60px; }
+  .card { padding: 46px 44px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); text-align: left; }
+  .card .k { font-size: 26px; font-weight: 800; color: var(--sand); letter-spacing: .08em; text-transform: uppercase; }
+  .card .t { font-size: 50px; font-weight: 800; letter-spacing: -.02em; margin-top: 16px; line-height: 1.1; }
+  .card .d { font-size: 28px; color: var(--muted); margin-top: 16px; line-height: 1.35; }
+
+  /* scene 4: growth line */
+  .chart { width: 1400px; height: 520px; margin-top: 40px; }
+  .chart path.line { fill: none; stroke: var(--mint); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: draw 3s cubic-bezier(.5,0,.2,1) both; animation-delay: var(--t); }
+  .chart path.area { fill: url(#fill); opacity: 0; animation: fadeOnly .8s ease both; animation-delay: var(--t2); }
+  .chart .axis { stroke: var(--line); stroke-width: 3; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fadeOnly { to { opacity: 1; } }
+
+  /* scene 5: before / after */
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 1500px; margin-top: 60px; }
+  .col { padding: 50px 50px; border-radius: 30px; text-align: left; border: 2px solid var(--line); background: var(--panel); }
+  .col .hd { font-size: 28px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .col li { list-style: none; font-size: 36px; font-weight: 650; margin-top: 22px; padding-left: 46px; position: relative; line-height: 1.25; }
+  .col li::before { content: ""; position: absolute; left: 0; top: 14px; width: 22px; height: 22px; border-radius: 50%; }
+  .before .hd { color: var(--rose); }
+  .before li::before { background: var(--rose); }
+  .after { border-color: var(--mint); }
+  .after .hd { color: var(--mint); }
+  .after li::before { background: var(--mint); }
+
+  /* scene 6: close */
+  .cta { display: inline-block; margin-top: 56px; font-size: 50px; font-weight: 820; padding: 26px 56px; border-radius: 999px; background: var(--sand); color: #2a2107; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(244,213,141,.5); } 50% { transform: scale(1.05); box-shadow: 0 0 0 26px rgba(244,213,141,0); } 100% { box-shadow: 0 0 0 0 rgba(244,213,141,0); } }
+</style>
+</head>
+<body>
+  <div class="aura"></div>
+  <div class="chrome">Plugged &amp; Paid · Why a virtual assistant</div>
+  <div class="progress"></div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="h1 rise" style="--t:.2s">What if your evenings</div>
+      <div class="h1 rise m" style="--t:1s">belonged to you again?</div>
+      <div class="body rise" style="--t:2.4s; margin-top:44px">That's what a good virtual assistant gives back.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · Time back · 5–13s -->
+  <section class="scene" style="--s:5s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:5.3s">Time back</span>
+      <div class="h2 rise" style="--t:5.5s; margin-top:30px">Admin moves off your plate.</div>
+      <div class="day">
+        <div class="daylbl rise" style="--t:6.4s"><span>Your working day</span><span>Admin vs. focus</span></div>
+        <div class="bar rise" style="--t:6.4s">
+          <div class="seg admin" style="--t:7s">Admin</div>
+          <div class="seg focus" style="--t:7s">Work that grows the business</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Benefits · 13–21s -->
+  <section class="scene" style="--s:13s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:13.3s">What changes</span>
+      <div class="cards">
+        <div class="card pop" style="--t:13.8s"><div class="k">Reliability</div><div class="t">Fewer dropped balls</div><div class="d">Follow-ups, deadlines and invoices get handled on schedule.</div></div>
+        <div class="card pop" style="--t:14.6s"><div class="k">Responsiveness</div><div class="t">Faster replies</div><div class="d">Inbox triage means urgent emails are answered first, every day.</div></div>
+        <div class="card pop" style="--t:15.4s"><div class="k">Clarity</div><div class="t">Clear priorities</div><div class="d">A daily dashboard shows the top three things that matter today.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Growth · 21–29s -->
+  <section class="scene" style="--s:21s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:21.3s">Growth</span>
+      <div class="h2 rise" style="--t:21.5s; margin-top:26px">More time for the work that grows revenue.</div>
+      <svg class="chart" viewBox="0 0 1400 520" aria-hidden="true">
+        <defs>
+          <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5ee6b4" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#5ee6b4" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <line class="axis" x1="40" y1="470" x2="1360" y2="470"/>
+        <line class="axis" x1="40" y1="60" x2="40" y2="470"/>
+        <path class="area" d="M40 440 C220 420 330 380 470 340 C610 300 720 270 860 210 C1000 150 1120 120 1360 60 L1360 470 L40 470 Z" style="--t2:23.6s"/>
+        <path class="line" d="M40 440 C220 420 330 380 470 340 C610 300 720 270 860 210 C1000 150 1120 120 1360 60" style="--t:22s"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Before / after · 29–37s -->
+  <section class="scene" style="--s:29s; --d:8.3s">
+    <div class="center">
+      <div class="ba">
+        <div class="col before pop" style="--t:29.3s">
+          <div class="hd">Without help</div>
+          <ul>
+            <li class="rise" style="--t:30s">Follow-ups slip</li>
+            <li class="rise" style="--t:30.6s">Inbox keeps growing</li>
+            <li class="rise" style="--t:31.2s">Evenings are for admin</li>
+          </ul>
+        </div>
+        <div class="col after pop" style="--t:29.8s">
+          <div class="hd">With a VA</div>
+          <ul>
+            <li class="rise" style="--t:31.4s">Follow-ups go out on time</li>
+            <li class="rise" style="--t:32s">Inbox triaged daily</li>
+            <li class="rise" style="--t:32.6s">Evenings are yours</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 37–45s -->
+  <section class="scene hold" style="--s:37s; --d:8s">
+    <div class="center">
+      <div class="h1 rise" style="--t:37.3s">Get your evenings back.</div>
+      <div class="body rise" style="--t:38.4s; margin-top:44px">Pick one task to hand off this week and see the difference.</div>
+      <div class="cta pop" style="--t:39.4s">Get in touch</div>
+    </div>
+  </section>
+</body>
+</html>
