@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What This Post Is Saying</title>
+<style>
+  :root {
+    --paper: #f4efe6;
+    --ink: #1d1d1f;
+    --soft: #6e6a62;
+    --blue: #3a6df0;
+    --red: #e5484d;
+    --sage: #7fb18f;
+    --card: #fffaf2;
+    --line: #d9d1c3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--ink); position: relative; }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+
+  .chrome { position: absolute; left: 120px; top: 60px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--soft); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--blue), var(--sage)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .h1 { font-size: 110px; font-weight: 850; letter-spacing: -.04em; line-height: 1.04; }
+  .h2 { font-size: 76px; font-weight: 820; letter-spacing: -.03em; line-height: 1.08; }
+  .body { font-size: 36px; line-height: 1.4; color: var(--soft); }
+  .tag { display: inline-block; font-size: 24px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: 10px 22px; border-radius: 999px; border: 2px solid var(--blue); color: var(--blue); }
+  .b { color: var(--blue); }
+  .rd { color: var(--red); }
+  .sg { color: var(--sage); }
+
+  /* people: simple flat figures */
+  .person { position: absolute; width: 170px; height: 380px; }
+  .person .head { position: absolute; left: 50px; top: 0; width: 70px; height: 70px; border-radius: 50%; background: var(--ink); }
+  .person .body { position: absolute; left: 25px; top: 80px; width: 120px; height: 170px; border-radius: 40px 40px 14px 14px; }
+  .person .leg { position: absolute; top: 240px; width: 36px; height: 140px; border-radius: 18px; background: var(--ink); }
+  .person .leg.l { left: 48px; animation: stepL .9s ease-in-out infinite; transform-origin: top center; }
+  .person .leg.r { left: 86px; animation: stepR .9s ease-in-out infinite; transform-origin: top center; }
+  @keyframes stepL { 50% { transform: rotate(14deg); } }
+  @keyframes stepR { 50% { transform: rotate(-14deg); } }
+  .person.him .body { background: var(--blue); }
+  .person.her .body { background: var(--sage); }
+  .person.him { animation: slideIn 1.2s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  .person.her { animation: slideIn 1.2s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes slideIn { from { transform: translateX(var(--from)); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .vest { position: absolute; width: 120px; height: 90px; border-radius: 14px; background: #556; border: 4px solid #334; opacity: 0; animation: dropOff 1.4s cubic-bezier(.5,0,.8,.4) both; animation-delay: var(--t); }
+  @keyframes dropOff { 0% { opacity: 1; transform: translate(0,0) rotate(0); } 100% { opacity: 1; transform: translate(60px, 240px) rotate(70deg); } }
+
+  .heart { position: absolute; font-size: 80px; color: var(--red); opacity: 0; animation: floatUp 2.6s ease-out both; animation-delay: var(--t); }
+  @keyframes floatUp { 0% { opacity: 0; transform: translateY(20px) scale(.8); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-160px) scale(1.1); } }
+  .heart.brk { animation: crack 1.2s ease both; animation-delay: var(--t); }
+  @keyframes crack { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: 1; transform: scale(1.1) rotate(-6deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+
+  .bubble { position: absolute; padding: 26px 34px; border-radius: 26px; background: var(--card); border: 2px solid var(--line); font-size: 36px; font-weight: 650; line-height: 1.3; text-align: left; max-width: 620px; }
+
+  .brick { position: absolute; width: 130px; height: 56px; border-radius: 8px; background: #b9643f; border: 3px solid #8e4a2c; opacity: 0; animation: layBrick .5s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes layBrick { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: none; } }
+
+  .card { padding: 40px 44px; border-radius: 26px; background: var(--card); border: 2px solid var(--line); text-align: left; }
+  .card .k { font-size: 24px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .card ul { margin-top: 18px; }
+  .card li { list-style: none; font-size: 34px; font-weight: 650; line-height: 1.3; margin-top: 18px; padding-left: 40px; position: relative; }
+  .card li::before { content: ""; position: absolute; left: 0; top: 12px; width: 20px; height: 20px; border-radius: 50%; }
+  .card.ok li::before { background: var(--sage); }
+  .card.no li::before { background: var(--red); }
+
+  .cta { display: inline-block; margin-top: 56px; font-size: 48px; font-weight: 820; padding: 24px 54px; border-radius: 999px; background: var(--blue); color: #fff; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(58,109,240,.4); } 50% { transform: scale(1.05); box-shadow: 0 0 0 24px rgba(58,109,240,0); } 100% { box-shadow: 0 0 0 0 rgba(58,109,240,0); } }
+</style>
+</head>
+<body>
+  <div class="chrome">Explainer · a viral post, unpacked</div>
+  <div class="progress"></div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="h1 rise" style="--t:.2s">A post about male heartbreak.</div>
+      <div class="h1 rise b" style="--t:1s">Let's unpack what it's saying.</div>
+    </div>
+    <div class="person him" style="left:1270px; top:520px; --from:-120px; --t:2.6s">
+      <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+    </div>
+    <div class="person her" style="left:1520px; top:520px; --from:120px; --t:2.8s">
+      <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · The setup · 5–13s -->
+  <section class="scene" style="--s:5s; --d:8.3s">
+    <span class="tag rise" style="position:absolute; left:120px; top:200px; --t:5.3s">The setup</span>
+    <div class="h2 rise" style="position:absolute; left:120px; top:260px; width:800px; --t:5.5s">He takes off his armor to get close.</div>
+    <div class="person him" style="left:1000px; top:480px; --from:-80px; --t:5.6s">
+      <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+    </div>
+    <div class="vest" style="left:1080px; top:560px; --t:7s"></div>
+    <div class="person her" style="left:1400px; top:480px; --from:80px; --t:5.8s">
+      <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+    </div>
+    <div class="heart" style="left:1500px; top:420px; --t:9.5s">♥</div>
+    <div class="heart" style="left:1600px; top:420px; --t:10.2s">♥</div>
+    <div class="bubble pop" style="left:120px; top:560px; --t:11s">The hug is the moment of trust.</div>
+  </section>
+
+  <!-- SCENE 3 · The joke · 13–21s -->
+  <section class="scene" style="--s:13s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:13.3s">The joke</span>
+      <div class="h2 rise" style="--t:13.5s; margin-top:30px">The post uses a dark joke to get attention.</div>
+      <div class="body rise" style="--t:14.6s; margin-top:36px; max-width:1200px">The punchline turns a moment of trust into violence. It's a shock line, and it pulls focus from the feeling underneath.</div>
+      <div class="heart brk" style="position:relative; margin-top:40px; --t:16s">♥</div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Walls · 21–30s -->
+  <section class="scene" style="--s:21s; --d:9.3s">
+    <span class="tag rise" style="position:absolute; left:120px; top:180px; --t:21.3s">The real point</span>
+    <div class="h2 rise" style="position:absolute; left:120px; top:240px; width:900px; --t:21.5s">Men are often taught to build walls.</div>
+    <div style="position:absolute; left:1000px; top:380px; width:780px; height:520px;">
+      <div class="person him" style="left:300px; top:100px; --from:0px; --t:25.6s">
+        <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+      </div>
+      <div class="brick" style="left:0px; top:440px; --t:22s"></div>
+      <div class="brick" style="left:136px; top:440px; --t:22.2s"></div>
+      <div class="brick" style="left:272px; top:440px; --t:22.4s"></div>
+      <div class="brick" style="left:408px; top:440px; --t:22.6s"></div>
+      <div class="brick" style="left:544px; top:440px; --t:22.8s"></div>
+      <div class="brick" style="left:0px; top:380px; --t:23.2s"></div>
+      <div class="brick" style="left:136px; top:380px; --t:23.4s"></div>
+      <div class="brick" style="left:272px; top:380px; --t:23.6s"></div>
+      <div class="brick" style="left:408px; top:380px; --t:23.8s"></div>
+      <div class="brick" style="left:544px; top:380px; --t:24s"></div>
+      <div class="brick" style="left:0px; top:320px; --t:24.4s"></div>
+      <div class="brick" style="left:136px; top:320px; --t:24.6s"></div>
+      <div class="brick" style="left:272px; top:320px; --t:24.8s"></div>
+      <div class="brick" style="left:408px; top:320px; --t:25s"></div>
+      <div class="brick" style="left:544px; top:320px; --t:25.2s"></div>
+    </div>
+    <div class="person her" style="left:150px; top:560px; --from:0px; --t:26.2s">
+      <div class="head"></div><div class="body"></div><div class="leg l"></div><div class="leg r"></div>
+    </div>
+    <div class="heart" style="left:300px; top:520px; --t:27.6s">♥</div>
+  </section>
+
+  <!-- SCENE 5 · Fair and unfair · 30–38s -->
+  <section class="scene" style="--s:30s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:30.3s">Fair point, weak delivery</span>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; width:1500px; margin-top:50px;">
+        <div class="card ok pop" style="--t:30.8s">
+          <div class="k sg">What it gets right</div>
+          <ul>
+            <li class="rise" style="--t:31.6s">Many men are never taught to name hurt.</li>
+            <li class="rise" style="--t:32.6s">Heartbreak is under-discussed.</li>
+          </ul>
+        </div>
+        <div class="card no pop" style="--t:31s">
+          <div class="k rd">What it misses</div>
+          <ul>
+            <li class="rise" style="--t:32.2s">Violence jokes make pain sound like a threat.</li>
+            <li class="rise" style="--t:33.4s">Walls hurt the people who care about you too.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 38–45s -->
+  <section class="scene hold" style="--s:38s; --d:7s">
+    <div class="center">
+      <div class="h1 rise" style="--t:38.3s">Name the hurt.</div>
+      <div class="h1 rise b" style="--t:38.9s">Then take the wall down.</div>
+      <div class="body rise" style="--t:40s; margin-top:44px">Talking about heartbreak isn't weakness. It's how people get closer.</div>
+      <div class="cta pop" style="--t:41.2s">Share your take</div>
+    </div>
+  </section>
+</body>
+</html>
