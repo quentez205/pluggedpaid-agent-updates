@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Avatars for Business</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #141b33;
+    --line: #22305a;
+    --teal: #2dd4bf;
+    --coral: #ff6b6b;
+    --amber: #ffc857;
+    --text: #f5f7ff;
+    --muted: #8a94b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  /* ---------- background ---------- */
+  .grid {
+    position: absolute; inset: -120px;
+    background-image:
+      linear-gradient(rgba(45,212,191,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45,212,191,.07) 1px, transparent 1px);
+    background-size: 80px 80px;
+    animation: drift 2s linear infinite;
+  }
+  @keyframes drift { to { transform: translate(80px, 80px); } }
+  .orb {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: .35;
+    animation: float 9s ease-in-out infinite alternate;
+  }
+  .orb.a { width: 720px; height: 720px; background: #2b4cff; left: -200px; top: -200px; }
+  .orb.b { width: 620px; height: 620px; background: var(--teal); right: -180px; bottom: -220px; animation-duration: 11s; }
+  @keyframes float { to { transform: translate(120px, -80px) scale(1.1); } }
+
+  /* ---------- scene system ---------- */
+  .scene {
+    position: absolute; inset: 0;
+    opacity: 0;
+    animation: fadeScene var(--d) linear var(--s) both;
+  }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene {
+    0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; }
+  }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise {
+    animation: rise .8s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: var(--t, var(--s));
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .pop {
+    animation: pop .7s cubic-bezier(.3,1.4,.5,1) both;
+    animation-delay: var(--t, var(--s));
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.85); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ---------- persistent chrome ---------- */
+  .brand {
+    position: absolute; left: 120px; top: 64px;
+    font-size: 26px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+  }
+  .brand b { color: var(--teal); }
+  .progress {
+    position: absolute; left: 0; bottom: 0; height: 8px; width: 100%;
+    background: linear-gradient(90deg, var(--teal), #2b4cff, var(--coral));
+    transform-origin: left;
+    animation: progress 45s linear both;
+  }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ---------- type ---------- */
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .h1 { font-size: 120px; font-weight: 800; letter-spacing: -.035em; line-height: 1.05; }
+  .h2 { font-size: 84px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+  .h3 { font-size: 46px; font-weight: 700; letter-spacing: -.02em; }
+  .body { font-size: 36px; line-height: 1.4; color: var(--muted); }
+  .accent { color: var(--teal); }
+  .coral { color: var(--coral); }
+  .eyebrow { font-size: 24px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--teal); }
+
+  /* ---------- scene 2: problem ---------- */
+  .cards3 { display: flex; gap: 48px; margin-top: 70px; }
+  .chip {
+    position: relative; width: 480px; padding: 48px 40px; border-radius: 28px;
+    background: var(--panel); border: 2px solid var(--line); text-align: left;
+  }
+  .chip .num { font-size: 88px; font-weight: 800; color: var(--coral); line-height: 1; }
+  .chip .lbl { font-size: 40px; font-weight: 700; margin-top: 18px; }
+  .chip .sub { font-size: 28px; color: var(--muted); margin-top: 10px; line-height: 1.35; }
+  .struck::after {
+    content: ""; position: absolute; left: -16px; right: -16px; top: 46%; height: 10px; border-radius: 6px;
+    background: var(--coral); transform: scaleX(0); transform-origin: left;
+    animation: draw .55s cubic-bezier(.6,0,.2,1) both;
+    animation-delay: var(--t2, var(--s));
+  }
+  @keyframes draw { to { transform: scaleX(1); } }
+
+  /* ---------- scene 3: avatar ---------- */
+  .split { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 130px; }
+  .avatar-frame {
+    position: relative; width: 600px; height: 680px; border-radius: 40px;
+    background: radial-gradient(circle at 50% 35%, #1c2a58 0%, var(--panel) 70%);
+    border: 2px solid var(--line); overflow: hidden;
+    box-shadow: 0 40px 120px rgba(45,212,191,.18);
+  }
+  .avatar-frame svg { position: absolute; left: 20px; top: 40px; width: 560px; height: 600px; }
+  .eye { transform-box: fill-box; transform-origin: center; animation: blink 4.2s infinite both; }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(.08); } }
+  .mouth { transform-box: fill-box; transform-origin: center; animation: talk .19s ease-in-out infinite alternate both; animation-delay: var(--t); }
+  @keyframes talk { from { transform: scaleY(.25); } to { transform: scaleY(1.7); } }
+  .scan {
+    position: absolute; left: 0; right: 0; top: 0; height: 6px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    box-shadow: 0 0 30px var(--teal);
+    animation: scanY 1.8s ease-in-out both; animation-delay: var(--t);
+  }
+  @keyframes scanY { from { transform: translateY(0); opacity: 1; } 90% { opacity: 1; } to { transform: translateY(680px); opacity: 0; } }
+  .wave { display: flex; align-items: center; gap: 10px; height: 110px; margin-top: 56px; }
+  .wave i {
+    display: block; width: 12px; height: 100%; border-radius: 6px; background: var(--teal);
+    transform-origin: center; animation: bar var(--dur, 1s) ease-in-out infinite alternate both;
+    animation-delay: var(--t);
+  }
+  @keyframes bar { from { transform: scaleY(.12); } to { transform: scaleY(1); } }
+
+  /* ---------- scene 4: use cases ---------- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 1480px; margin-top: 60px; }
+  .use {
+    position: relative; padding: 46px 52px 50px; border-radius: 32px; background: var(--panel);
+    border: 2px solid var(--line); overflow: hidden; text-align: left;
+  }
+  .use::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: var(--c); }
+  .use .t { font-size: 46px; font-weight: 800; letter-spacing: -.02em; color: var(--c); }
+  .use .d { font-size: 32px; line-height: 1.4; color: var(--text); margin-top: 16px; opacity: .92; }
+
+  /* ---------- scene 5: how to create ---------- */
+  .steps { display: flex; gap: 0; width: 1560px; margin-top: 90px; position: relative; justify-content: space-between; }
+  .steps::before {
+    content: ""; position: absolute; left: 220px; right: 220px; top: 92px; height: 6px; border-radius: 3px;
+    background: linear-gradient(90deg, var(--teal), #2b4cff);
+    transform: scaleX(0); transform-origin: left;
+    animation: draw 1.4s ease-in-out both; animation-delay: var(--t);
+  }
+  .step { width: 440px; text-align: center; }
+  .dot {
+    width: 184px; height: 184px; margin: 0 auto; border-radius: 50%;
+    background: var(--panel); border: 6px solid var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px; font-weight: 800; color: var(--teal);
+    box-shadow: 0 0 60px rgba(45,212,191,.25);
+  }
+  .step .ttl { font-size: 42px; font-weight: 800; margin-top: 40px; letter-spacing: -.02em; }
+  .step .txt { font-size: 29px; line-height: 1.4; color: var(--muted); margin-top: 16px; padding: 0 20px; }
+  .note { font-size: 26px; color: var(--amber); margin-top: 90px; letter-spacing: .01em; }
+
+  /* ---------- scene 6: CTA ---------- */
+  .cta-tag { font-size: 30px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--teal); }
+  .cta-line { font-size: 130px; font-weight: 800; letter-spacing: -.04em; line-height: 1.02; margin-top: 30px; }
+  .cta-sub { font-size: 44px; color: var(--muted); margin-top: 40px; letter-spacing: .01em; }
+  .cta-sub span { color: var(--text); }
+  .dotsep { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--coral); margin: 0 22px 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+  <div class="orb a"></div>
+  <div class="orb b"></div>
+  <div class="grid"></div>
+
+  <div class="brand rise" style="--t:.1s"><b>AI Avatars</b> &nbsp;/&nbsp; Business</div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="h1 rise" style="--t:.3s">Your next spokesperson</div>
+      <div class="h1 rise accent" style="--t:1.0s">doesn't need a camera.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · The problem · 5–12s -->
+  <section class="scene" style="--s:5s; --d:7.3s">
+    <div class="center">
+      <div class="eyebrow rise" style="--t:5.3s">The old way</div>
+      <div class="h2 rise" style="--t:5.5s; margin-top:24px">Every update means another shoot.</div>
+      <div class="cards3">
+        <div class="chip pop" style="--t:6.6s">
+          <div class="num">01</div>
+          <div class="lbl struck" style="--t2:8.4s">Studio &amp; crew</div>
+          <div class="sub">Booking, lighting and a camera for every single video.</div>
+        </div>
+        <div class="chip pop" style="--t:7.1s">
+          <div class="num">02</div>
+          <div class="lbl struck" style="--t2:8.9s">Reshoots</div>
+          <div class="sub">One changed line of copy and the whole day is gone.</div>
+        </div>
+        <div class="chip pop" style="--t:7.6s">
+          <div class="num">03</div>
+          <div class="lbl struck" style="--t2:9.4s">Days to publish</div>
+          <div class="sub">Scheduling, takes and edits before anything goes live.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Solution · 12–22s -->
+  <section class="scene" style="--s:12s; --d:10.3s">
+    <div class="split">
+      <div class="avatar-frame pop" style="--t:12.2s">
+        <div class="scan" style="--t:13.6s"></div>
+        <svg viewBox="-200 -240 400 480" aria-hidden="true">
+          <defs>
+            <radialGradient id="skin" cx="45%" cy="40%" r="70%">
+              <stop offset="0" stop-color="#f7d3b2"/>
+              <stop offset="1" stop-color="#e09b70"/>
+            </radialGradient>
+          </defs>
+          <!-- shoulders -->
+          <path d="M-190 260 C-190 130 -110 92 0 92 C110 92 190 130 190 260 Z" fill="#2dd4bf"/>
+          <path d="M-40 92 L0 150 L40 92 Z" fill="#f5f7ff" opacity=".9"/>
+          <!-- neck -->
+          <rect x="-40" y="40" width="80" height="90" rx="30" fill="#e09b70"/>
+          <!-- head -->
+          <ellipse cx="0" cy="-20" rx="95" ry="115" fill="url(#skin)"/>
+          <!-- hair -->
+          <path d="M-102 -28 C-118 -160 -40 -184 4 -180 C70 -178 116 -140 102 -34 C92 -92 62 -114 18 -112 C-26 -104 -66 -100 -102 -28 Z" fill="#3b2a22"/>
+          <!-- brows -->
+          <path d="M-58 -50 Q-40 -62 -20 -52" stroke="#3b2a22" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M20 -52 Q40 -62 58 -50" stroke="#3b2a22" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <!-- eyes -->
+          <ellipse class="eye" cx="-38" cy="-14" rx="11" ry="14" fill="#0b1020"/>
+          <ellipse class="eye" cx="38" cy="-14" rx="11" ry="14" fill="#0b1020"/>
+          <!-- nose -->
+          <path d="M0 2 Q-9 24 5 28" stroke="#b86f48" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- cheeks -->
+          <circle cx="-62" cy="22" r="13" fill="#ff8a8a" opacity=".25"/>
+          <circle cx="62" cy="22" r="13" fill="#ff8a8a" opacity=".25"/>
+          <!-- mouth -->
+          <ellipse class="mouth" style="--t:14.2s" cx="0" cy="62" rx="30" ry="9" fill="#8b2e3c"/>
+        </svg>
+      </div>
+
+      <div style="width:700px; text-align:left">
+        <div class="eyebrow rise" style="--t:12.6s">AI avatar</div>
+        <div class="h2 rise" style="--t:13.0s; margin-top:24px; text-align:left">A digital presenter that speaks your script.</div>
+        <div class="body rise" style="--t:14.6s; margin-top:34px; text-align:left">Realistic on-screen presence. Update the words in minutes, not days.</div>
+        <div class="wave" style="--t:15.0s">
+          <!-- bars generated below -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Use cases · 22–32s -->
+  <section class="scene" style="--s:22s; --d:10.3s">
+    <div class="center">
+      <div class="eyebrow rise" style="--t:22.3s">Where businesses use them</div>
+      <div class="h2 rise" style="--t:22.5s; margin-top:24px">Video that scales with your team.</div>
+      <div class="grid2">
+        <div class="use pop" style="--c:var(--teal); --t:23.2s">
+          <div class="t">Sales outreach</div>
+          <div class="d">A personal video intro for every prospect, sent at scale.</div>
+        </div>
+        <div class="use pop" style="--c:var(--amber); --t:23.8s">
+          <div class="t">Onboarding &amp; training</div>
+          <div class="d">Change one line of the script and re-render. No reshoot.</div>
+        </div>
+        <div class="use pop" style="--c:var(--coral); --t:24.4s">
+          <div class="t">Support &amp; FAQs</div>
+          <div class="d">Answer common questions on your site or help center, any hour.</div>
+        </div>
+        <div class="use pop" style="--c:#8fb4ff; --t:25.0s">
+          <div class="t">Localization</div>
+          <div class="d">One presenter, many languages, the same on-brand look.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · How to create one · 32–40s -->
+  <section class="scene" style="--s:32s; --d:8.3s">
+    <div class="center">
+      <div class="eyebrow rise" style="--t:32.3s">How to create one</div>
+      <div class="h2 rise" style="--t:32.5s; margin-top:24px">Three steps. One afternoon.</div>
+      <div class="steps" style="--t:33.6s">
+        <div class="step pop" style="--t:33.0s">
+          <div class="dot">1</div>
+          <div class="ttl">Record a reference</div>
+          <div class="txt">A 1–2 minute clip of you speaking to camera, in good light.</div>
+        </div>
+        <div class="step pop" style="--t:34.6s">
+          <div class="dot">2</div>
+          <div class="ttl">Add your script</div>
+          <div class="txt">Paste text or upload a file. Short, natural sentences work best.</div>
+        </div>
+        <div class="step pop" style="--t:36.2s">
+          <div class="dot">3</div>
+          <div class="ttl">Pick a voice &amp; render</div>
+          <div class="txt">Choose or clone a voice, review the take, then export.</div>
+        </div>
+      </div>
+      <div class="note rise" style="--t:38.0s">Only create an avatar of someone who has given written consent.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · CTA · 40–45s -->
+  <section class="scene hold" style="--s:40s; --d:5s">
+    <div class="center">
+      <div class="cta-tag rise" style="--t:40.3s">AI avatars for business</div>
+      <div class="cta-line rise" style="--t:40.6s">Start with <span class="accent">one</span> avatar.</div>
+      <div class="cta-sub rise" style="--t:41.4s"><span>Script it.</span><i class="dotsep"></i><span>Render it.</span><i class="dotsep"></i><span>Ship it.</span></div>
+    </div>
+  </section>
+
+  <div class="progress"></div>
+
+<script>
+  // Generate the voice-wave bars for scene 3. Each bar gets its own speed and phase.
+  (function () {
+    const wave = document.querySelector('.wave');
+    const count = 26;
+    for (let k = 0; k < count; k++) {
+      const bar = document.createElement('i');
+      const dur = 0.55 + ((k * 37) % 11) * 0.06;
+      bar.style.setProperty('--dur', dur.toFixed(2) + 's');
+      bar.style.setProperty('--t', 'calc(var(--s) + 15.2s + ' + ((k * 53) % 17) * 0.04 + 's)');
+      bar.style.height = (40 + ((k * 29) % 60)) + '%';
+      wave.appendChild(bar);
+    }
+  })();
+</script>
+</body>
+</html>

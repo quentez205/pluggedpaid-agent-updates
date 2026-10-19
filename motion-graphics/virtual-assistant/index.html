@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual Assistant, Systems First</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b26;
+    --line: #262e3f;
+    --text: #eef2f8;
+    --muted: #8b96ab;
+    --coral: #ff6b5b;
+    --teal: #2ec4b6;
+    --gold: #f7c948;
+    --blue: #5b8cff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  .spot { position: absolute; width: 1000px; height: 1000px; border-radius: 50%; filter: blur(150px); opacity: .22; background: var(--teal); left: -300px; top: -350px; animation: move 14s ease-in-out infinite alternate; }
+  .spot.b { background: var(--coral); left: auto; right: -350px; top: auto; bottom: -400px; animation-duration: 16s; }
+  @keyframes move { to { transform: translate(260px, 120px); } }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: none; } }
+
+  .chrome { position: absolute; left: 120px; top: 60px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--teal), var(--gold), var(--coral)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .h1 { font-size: 112px; font-weight: 850; letter-spacing: -.04em; line-height: 1.02; }
+  .h2 { font-size: 80px; font-weight: 820; letter-spacing: -.03em; line-height: 1.05; }
+  .body { font-size: 34px; line-height: 1.4; color: var(--muted); }
+  .tag { display: inline-block; font-size: 24px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: 10px 22px; border-radius: 999px; border: 2px solid var(--teal); color: var(--teal); }
+  .t { color: var(--teal); }
+  .c { color: var(--coral); }
+  .g { color: var(--gold); }
+
+  /* ---------- scene 2: inbox ---------- */
+  .inbox { position: absolute; left: 140px; top: 200px; width: 820px; }
+  .mail { display: flex; align-items: center; justify-content: space-between; height: 98px; padding: 0 30px; margin-bottom: 14px; border-radius: 18px; background: var(--panel); border: 2px solid var(--line); font-size: 30px; font-weight: 600; animation: rise .7s cubic-bezier(.2,.8,.2,1) both, out .7s cubic-bezier(.6,0,.3,1) both; animation-delay: var(--t), var(--o); }
+  .mail small { font-size: 22px; color: var(--muted); font-weight: 500; }
+  @keyframes out { to { transform: translateX(900px); opacity: 0; } }
+  .bins { position: absolute; right: 140px; top: 200px; width: 760px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .bin { height: 210px; border-radius: 26px; background: var(--panel); border: 2px solid var(--line); padding: 30px; text-align: left; }
+  .bin .n { font-size: 34px; font-weight: 800; }
+  .bin .c2 { font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .counter { position: absolute; left: 140px; top: 880px; font-size: 40px; font-weight: 800; color: var(--muted); }
+  .counter b { color: var(--teal); font-size: 60px; }
+
+  /* ---------- scene 3: dashboard ---------- */
+  .dash { position: absolute; left: 240px; top: 190px; width: 1440px; height: 720px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); padding: 44px 56px; }
+  .dash .hd { font-size: 40px; font-weight: 850; letter-spacing: -.02em; }
+  .dash .sub { font-size: 24px; color: var(--muted); margin-top: 8px; font-weight: 500; }
+  .task { display: flex; align-items: center; gap: 28px; font-size: 40px; font-weight: 650; padding: 24px 0; border-bottom: 2px solid var(--line); }
+  .task .ck { position: relative; flex: none; width: 60px; height: 60px; border-radius: 16px; border: 4px solid var(--teal); }
+  .task .ck::after { content: ""; position: absolute; left: 16px; top: 2px; width: 18px; height: 36px; border-right: 8px solid var(--teal); border-bottom: 8px solid var(--teal); transform: rotate(45deg) scale(0); animation: tick .4s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--t2); }
+  @keyframes tick { to { transform: rotate(45deg) scale(1); } }
+  .task .tg { margin-left: auto; font-size: 24px; font-weight: 800; padding: 8px 16px; border-radius: 999px; background: #1f2a3d; color: var(--muted); }
+  .focus { position: absolute; right: 56px; bottom: 44px; width: 480px; padding: 26px 30px; border-radius: 22px; background: #1b2435; border: 2px solid var(--gold); }
+  .focus .k { font-size: 22px; font-weight: 800; color: var(--gold); letter-spacing: .1em; text-transform: uppercase; }
+  .focus .v { font-size: 34px; font-weight: 750; margin-top: 10px; }
+  .bar { height: 14px; border-radius: 7px; background: #2a3448; margin-top: 18px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--teal); border-radius: 7px; transform-origin: left; animation: grow 1.4s ease-out both; animation-delay: var(--t); }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ---------- scene 4: flow ---------- */
+  .flow { display: flex; align-items: center; margin-top: 70px; }
+  .node { width: 300px; height: 190px; border-radius: 26px; background: var(--panel); border: 2px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .node .t1 { font-size: 36px; font-weight: 800; }
+  .node .t2 { font-size: 24px; color: var(--muted); margin-top: 8px; }
+  .node.hot { border-color: var(--teal); }
+  .link { width: 130px; height: 6px; background: var(--line); border-radius: 3px; position: relative; overflow: visible; }
+  .link i { position: absolute; left: 0; top: -9px; width: 24px; height: 24px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 24px var(--teal); animation: travel 1.6s linear infinite; animation-delay: var(--t); opacity: 0; }
+  @keyframes travel { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(130px); opacity: 0; } }
+
+  /* ---------- scene 5: services ---------- */
+  .svc { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 1420px; margin-top: 56px; }
+  .card { padding: 40px 46px; border-radius: 26px; background: var(--panel); border: 2px solid var(--line); text-align: left; }
+  .card .k { font-size: 22px; font-weight: 800; letter-spacing: .12em; color: var(--teal); }
+  .card .tt { font-size: 44px; font-weight: 800; letter-spacing: -.02em; margin-top: 10px; }
+  .card .d { font-size: 27px; color: var(--muted); margin-top: 12px; line-height: 1.35; }
+
+  /* ---------- scene 6: CTA ---------- */
+  .cta { display: inline-block; margin-top: 56px; font-size: 50px; font-weight: 820; padding: 26px 56px; border-radius: 999px; background: var(--gold); color: #1a1405; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(247,201,72,.5); } 50% { transform: scale(1.05); box-shadow: 0 0 0 26px rgba(247,201,72,0); } 100% { box-shadow: 0 0 0 0 rgba(247,201,72,0); } }
+</style>
+</head>
+<body>
+  <div class="spot"></div>
+  <div class="spot b"></div>
+  <div class="chrome">Plugged &amp; Paid · Virtual assistance</div>
+  <div class="progress"></div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="h1 rise" style="--t:.2s">You run the business.</div>
+      <div class="h1 rise t" style="--t:1s">Who runs the inbox?</div>
+      <div class="body rise" style="--t:2.4s; margin-top:44px">I can. I'm a virtual assistant who works from systems, not guesses.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · Inbox triage · 5–13s -->
+  <section class="scene" style="--s:5s; --d:8.3s">
+    <div class="inbox">
+      <div class="mail" style="--o:8.00s; --t:5.3s">Invoice overdue — client A <small>9:14</small></div>
+      <div class="mail" style="--o:8.15s; --t:5.5s">Can we move Thursday? <small>9:02</small></div>
+      <div class="mail" style="--o:8.30s; --t:5.7s">Newsletter: 5 tips <small>8:40</small></div>
+      <div class="mail" style="--o:8.45s; --t:5.9s">Lead form: new inquiry <small>8:12</small></div>
+      <div class="mail" style="--o:8.60s; --t:6.1s">Vendor renewal due <small>Mon</small></div>
+      <div class="mail" style="--o:8.75s; --t:6.3s">Receipt: software <small>Mon</small></div>
+    </div>
+    <div class="bins">
+      <div class="bin pop" style="--t:6.2s"><div class="n c">Reply today</div><div class="c2">Client and deadline emails</div></div>
+      <div class="bin pop" style="--t:6.4s"><div class="n g">Schedule</div><div class="c2">Calls and meeting changes</div></div>
+      <div class="bin pop" style="--t:6.6s"><div class="n t">Routed</div><div class="c2">Leads sent to your pipeline</div></div>
+      <div class="bin pop" style="--t:6.8s"><div class="n" style="color:var(--muted)">Archived</div><div class="c2">Newsletters and receipts</div></div>
+    </div>
+    <div class="counter rise" style="--t:7.4s">Inbox zero, every day: <b>0</b></div>
+  </section>
+
+  <!-- SCENE 3 · Daily dashboard · 13–21s -->
+  <section class="scene" style="--s:13s; --d:8.3s">
+    <div class="dash rise" style="--t:13.2s">
+      <div class="hd">Command Center</div>
+      <div class="sub">Today's top three, checked off as they're done</div>
+      <div style="margin-top:34px">
+        <div class="task rise" style="--t:13.8s"><span class="ck" style="--t2:14.8s"></span>Send the proposal to client A<span class="tg">Done</span></div>
+        <div class="task rise" style="--t:14.2s"><span class="ck" style="--t2:15.8s"></span>Clear the overdue invoices<span class="tg">Done</span></div>
+        <div class="task rise" style="--t:14.6s"><span class="ck" style="--t2:16.8s"></span>Set up the lead follow-up<span class="tg">In progress</span></div>
+      </div>
+      <div class="focus pop" style="--t:17.4s">
+        <div class="k">This week's focus</div>
+        <div class="v">Book 5 discovery calls</div>
+        <div class="bar"><i style="--t:17.8s; width:60%"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Systems · 21–30s -->
+  <section class="scene" style="--s:21s; --d:9.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:21.3s">How I work</span>
+      <div class="h2 rise" style="--t:21.5s; margin-top:30px">I build the systems that move the work.</div>
+      <div class="flow">
+        <div class="node pop" style="--t:22.4s"><div class="t1">Form</div><div class="t2">New inquiry</div></div>
+        <div class="link"><i style="--t:23s"></i></div>
+        <div class="node hot pop" style="--t:22.8s"><div class="t1">Lead</div><div class="t2">Tagged and scored</div></div>
+        <div class="link"><i style="--t:23.6s"></i></div>
+        <div class="node pop" style="--t:23.2s"><div class="t1">Pipeline</div><div class="t2">Stage updated</div></div>
+        <div class="link"><i style="--t:24.2s"></i></div>
+        <div class="node hot pop" style="--t:23.6s"><div class="t1">Follow-up</div><div class="t2">Sent on schedule</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Services · 30–38s -->
+  <section class="scene" style="--s:30s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:30.3s">What I handle</span>
+      <div class="svc">
+        <div class="card pop" style="--t:30.8s"><div class="k">01</div><div class="tt">Inbox and calendar</div><div class="d">Triage, replies drafted for your approval, and scheduling kept clean.</div></div>
+        <div class="card pop" style="--t:31.4s"><div class="k">02</div><div class="tt">Notion dashboards</div><div class="d">Daily priorities, weekly focus, and SOPs your team can actually follow.</div></div>
+        <div class="card pop" style="--t:32s"><div class="k">03</div><div class="tt">Lead flows</div><div class="d">Forms, tagging, and follow-up sequences wired between the tools you use.</div></div>
+        <div class="card pop" style="--t:32.6s"><div class="k">04</div><div class="tt">Research and outreach</div><div class="d">Prospect lists and personalized drafts that you review before anything sends.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · CTA · 38–45s -->
+  <section class="scene hold" style="--s:38s; --d:7s">
+    <div class="center">
+      <div class="h1 rise" style="--t:38.3s">Want your inbox handled</div>
+      <div class="h1 rise t" style="--t:38.8s">by someone who thinks in systems?</div>
+      <div class="body rise" style="--t:40s; margin-top:44px">Let's map your workflow and fix the bottleneck first.</div>
+      <div class="cta pop" style="--t:41s">Get in touch</div>
+    </div>
+  </section>
+</body>
+</html>

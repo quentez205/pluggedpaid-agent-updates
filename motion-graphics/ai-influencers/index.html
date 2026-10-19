@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Influencers, Explained</title>
+<style>
+  :root {
+    --bg: #120a22;
+    --panel: #1d1233;
+    --line: #3b2a5c;
+    --text: #f6f0ff;
+    --muted: #b7a8d6;
+    --magenta: #ff4fa3;
+    --cyan: #3ee7ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  .orb { position: absolute; border-radius: 50%; filter: blur(130px); opacity: .35; animation: float 12s ease-in-out infinite alternate; }
+  .orb.a { width: 800px; height: 800px; background: var(--magenta); left: -250px; bottom: -300px; }
+  .orb.b { width: 700px; height: 700px; background: var(--cyan); right: -250px; top: -250px; animation-duration: 14s; }
+  @keyframes float { to { transform: translate(140px, -90px); } }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.4,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
+  .grow { transform-origin: left; animation: grow .9s ease-out both; animation-delay: var(--t); }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .blink { animation: blink 1s steps(1) infinite both; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .chrome { position: absolute; left: 120px; top: 70px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--magenta), var(--cyan)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .tag { display: inline-block; font-size: 26px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 12px 24px; border-radius: 999px; border: 2px solid var(--cyan); color: var(--cyan); }
+  .h1 { font-size: 120px; font-weight: 850; letter-spacing: -.04em; line-height: 1.02; }
+  .h2 { font-size: 80px; font-weight: 820; letter-spacing: -.03em; line-height: 1.06; }
+  .body { font-size: 34px; line-height: 1.4; color: var(--muted); }
+  .m { color: var(--magenta); }
+  .c { color: var(--cyan); }
+
+  /* Scene 1 */
+  .type { font-size: 120px; font-weight: 850; letter-spacing: -.04em; }
+  .type .word { display: inline-block; opacity: 0; animation: wordIn .5s ease both; animation-delay: var(--t); margin: 0 14px; }
+  @keyframes wordIn { from { opacity: 0; transform: translateY(30px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+
+  /* Scene 2: phone mockup */
+  .split { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 120px; }
+  .phone { width: 460px; height: 860px; border-radius: 60px; background: #07040f; border: 10px solid #2b1d47; padding: 40px 28px; box-shadow: 0 40px 120px rgba(255,79,163,.25); }
+  .prof { display: flex; align-items: center; gap: 22px; }
+  .av { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--magenta), var(--cyan)); flex: none; position: relative; }
+  .av::after { content: ""; position: absolute; left: 36px; top: 32px; width: 48px; height: 48px; border-radius: 50%; background: #120a22; box-shadow: 0 0 0 0 transparent; }
+  .av::before { content: ""; position: absolute; left: 22px; top: 80px; width: 76px; height: 50px; border-radius: 40px 40px 12px 12px; background: #120a22; }
+  .handle { font-size: 34px; font-weight: 800; }
+  .badge { display: inline-block; font-size: 20px; font-weight: 800; padding: 6px 14px; border-radius: 999px; background: var(--cyan); color: #120a22; margin-top: 8px; }
+  .stats { display: flex; justify-content: space-between; margin-top: 30px; text-align: center; }
+  .stats .n { font-size: 40px; font-weight: 850; }
+  .stats .l { font-size: 20px; color: var(--muted); margin-top: 4px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 30px; }
+  .thumb { aspect-ratio: 3/4; border-radius: 14px; background: linear-gradient(160deg, #3b2a5c, #1d1233); position: relative; overflow: hidden; }
+  .thumb.t2 { background: linear-gradient(160deg, #5b1f4a, #1d1233); }
+  .thumb.t3 { background: linear-gradient(160deg, #1f4a5b, #1d1233); }
+  .thumb.t4 { background: linear-gradient(160deg, #4a3b1f, #1d1233); }
+  .thumb.t5 { background: linear-gradient(160deg, #2a1f5b, #1d1233); }
+  .thumb.t6 { background: linear-gradient(160deg, #5b2a2a, #1d1233); }
+  .likes { position: absolute; left: 10px; bottom: 8px; font-size: 20px; font-weight: 700; }
+  .copy { width: 620px; text-align: left; }
+
+  /* Scene 3: content engine */
+  .cards3 { display: flex; gap: 40px; margin-top: 70px; }
+  .step { width: 500px; padding: 44px 40px; border-radius: 30px; background: var(--panel); border: 2px solid var(--line); text-align: left; }
+  .step .n { font-size: 74px; font-weight: 900; color: var(--magenta); line-height: 1; }
+  .step .l { font-size: 44px; font-weight: 800; margin-top: 16px; letter-spacing: -.02em; }
+  .step .s { font-size: 28px; color: var(--muted); margin-top: 12px; line-height: 1.35; }
+  .heart { display: inline-block; font-size: 30px; color: var(--magenta); margin-top: 18px; font-weight: 800; }
+
+  /* Scene 4: money streams */
+  .streams { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; width: 1380px; margin-top: 60px; }
+  .stream { padding: 40px 46px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); text-align: left; }
+  .stream .t { font-size: 46px; font-weight: 800; letter-spacing: -.02em; }
+  .stream .d { font-size: 28px; color: var(--muted); margin-top: 10px; line-height: 1.3; }
+  .bar { height: 14px; border-radius: 7px; background: var(--line); margin-top: 26px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 7px; background: linear-gradient(90deg, var(--magenta), var(--cyan)); transform-origin: left; animation: grow 1.2s ease-out both; animation-delay: var(--t); }
+  .note { font-size: 26px; color: var(--muted); margin-top: 50px; }
+
+  /* Scene 5: rules */
+  .checks { display: flex; flex-direction: column; gap: 34px; width: 1180px; margin-top: 50px; text-align: left; }
+  .check { display: flex; align-items: center; gap: 36px; font-size: 50px; font-weight: 760; letter-spacing: -.02em; }
+  .box { position: relative; flex: none; width: 86px; height: 86px; border-radius: 20px; border: 5px solid var(--cyan); }
+  .box::after {
+    content: ""; position: absolute; left: 22px; top: 4px; width: 26px; height: 52px;
+    border-right: 11px solid var(--magenta); border-bottom: 11px solid var(--magenta);
+    transform: rotate(45deg) scale(0); transform-origin: center;
+    animation: tick .4s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--t2);
+  }
+  @keyframes tick { to { transform: rotate(45deg) scale(1); } }
+</style>
+</head>
+<body>
+  <div class="orb a"></div>
+  <div class="orb b"></div>
+  <div class="chrome">AI influencers</div>
+  <div class="progress"></div>
+
+  <!-- SCENE 1 · Hook · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="type">
+        <span class="word" style="--t:.2s">Your</span><span class="word" style="--t:.5s">next</span><span class="word m" style="--t:.8s">creator</span>
+      </div>
+      <div class="type" style="margin-top:10px">
+        <span class="word" style="--t:1.4s">never</span><span class="word c" style="--t:1.7s">sleeps.</span><span class="blink c" style="--t:2.4s">|</span>
+      </div>
+      <div class="body rise" style="--t:2.8s; margin-top:50px">It's an AI persona that posts, engages and earns, around the clock.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · Persona · 5–12s -->
+  <section class="scene" style="--s:5s; --d:7.3s">
+    <div class="split">
+      <div class="phone pop" style="--t:5.3s">
+        <div class="prof">
+          <div class="av"></div>
+          <div>
+            <div class="handle">@nova.ai</div>
+            <div class="badge">AI persona</div>
+          </div>
+        </div>
+        <div class="stats">
+          <div><div class="n">24</div><div class="l">posts</div></div>
+          <div><div class="n c">12.4K</div><div class="l">followers</div></div>
+          <div><div class="n">3</div><div class="l">brand deals</div></div>
+        </div>
+        <div class="grid3">
+          <div class="thumb pop" style="--t:6.4s"><span class="likes">♥ 1.2K</span></div>
+          <div class="thumb t2 pop" style="--t:6.6s"><span class="likes">♥ 980</span></div>
+          <div class="thumb t3 pop" style="--t:6.8s"><span class="likes">♥ 3.1K</span></div>
+          <div class="thumb t4 pop" style="--t:7s"><span class="likes">♥ 740</span></div>
+          <div class="thumb t5 pop" style="--t:7.2s"><span class="likes">♥ 2.4K</span></div>
+          <div class="thumb t6 pop" style="--t:7.4s"><span class="likes">♥ 1.6K</span></div>
+        </div>
+      </div>
+      <div class="copy">
+        <span class="tag rise" style="--t:5.5s">Step 1 · Build the persona</span>
+        <div class="h2 rise" style="--t:5.8s; margin-top:34px">A consistent face, voice and niche.</div>
+        <div class="body rise" style="--t:6.8s; margin-top:34px">Same look in every post, a clear topic, and a profile that says it's AI.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Content engine · 12–20s -->
+  <section class="scene" style="--s:12s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:12.3s">Step 2 · Post on a schedule</span>
+      <div class="h2 rise" style="--t:12.5s; margin-top:34px">Batch the scripts. Post every day.</div>
+      <div class="cards3">
+        <div class="step pop" style="--t:13.4s"><div class="n">01</div><div class="l">Write a script bank</div><div class="s">Ten hooks and talking points for your niche.</div><span class="heart">♥ 1.2K</span></div>
+        <div class="step pop" style="--t:14.2s"><div class="n">02</div><div class="l">Generate in batches</div><div class="s">Video and images made in one session.</div><span class="heart">♥ 2.1K</span></div>
+        <div class="step pop" style="--t:15s"><div class="n">03</div><div class="l">Schedule and reply</div><div class="s">Consistency builds the audience.</div><span class="heart">♥ 3.4K</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Money · 20–30s -->
+  <section class="scene" style="--s:20s; --d:10.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:20.3s">Step 3 · Ways to earn</span>
+      <div class="h2 rise" style="--t:20.5s; margin-top:34px">Where the money comes from</div>
+      <div class="streams">
+        <div class="stream pop" style="--t:21.2s"><div class="t">Brand deals</div><div class="d">Sponsored posts for products that fit the persona.</div><div class="bar"><i style="--t:22.4s; width:70%"></i></div></div>
+        <div class="stream pop" style="--t:21.6s"><div class="t">Affiliate links</div><div class="d">A commission when a viewer buys through your link.</div><div class="bar"><i style="--t:22.8s; width:45%"></i></div></div>
+        <div class="stream pop" style="--t:22s"><div class="t">Digital products</div><div class="d">Guides, templates or presets you sell once and reuse.</div><div class="bar"><i style="--t:23.2s; width:60%"></i></div></div>
+        <div class="stream pop" style="--t:22.4s"><div class="t">Subscriptions</div><div class="d">Paid community or early access for regular fans.</div><div class="bar"><i style="--t:23.6s; width:35%"></i></div></div>
+      </div>
+      <div class="note rise" style="--t:25s">Earnings vary widely. Most new accounts earn little at first.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Rules · 30–38s -->
+  <section class="scene" style="--s:30s; --d:8.3s">
+    <div class="center">
+      <span class="tag rise" style="--t:30.3s">Non-negotiables</span>
+      <div class="checks">
+        <div class="check rise" style="--t:30.8s"><span class="box" style="--t2:31.6s"></span>Label the account as AI</div>
+        <div class="check rise" style="--t:32.2s"><span class="box" style="--t2:33s"></span>Disclose every sponsored post</div>
+        <div class="check rise" style="--t:33.6s"><span class="box" style="--t2:34.4s"></span>No real person's likeness without consent</div>
+        <div class="check rise" style="--t:35s"><span class="box" style="--t2:35.8s"></span>Follow each platform's AI rules</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 38–45s -->
+  <section class="scene hold" style="--s:38s; --d:7s">
+    <div class="center">
+      <div class="h1 rise" style="--t:38.3s">Build it. Test it.</div>
+      <div class="h1 rise c" style="--t:38.8s">Disclose it.</div>
+      <div class="body rise" style="--t:40s; margin-top:50px">Trust is the asset. Protect it before you monetize.</div>
+    </div>
+  </section>
+</body>
+</html>

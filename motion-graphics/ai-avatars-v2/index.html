@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Avatars, Made Simple</title>
+<style>
+  :root {
+    --paper: #f5efe4;
+    --ink: #111111;
+    --orange: #ff5a1f;
+    --blue: #2357ff;
+    --mint: #7be0b5;
+    --soft: #6b6457;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--ink); position: relative; }
+
+  .scene {
+    position: absolute; inset: 0; opacity: 0;
+    animation: fadeScene var(--d) linear var(--s) both;
+  }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  /* Entrance: text slides up from a mask */
+  .mask { overflow: hidden; display: block; }
+  .slide {
+    display: block;
+    animation: slideUp .6s cubic-bezier(.2,.9,.2,1) both;
+    animation-delay: var(--t);
+  }
+  @keyframes slideUp { from { transform: translateY(110%); } to { transform: none; } }
+
+  .pop {
+    animation: pop .55s cubic-bezier(.3,1.5,.5,1) both;
+    animation-delay: var(--t);
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+
+  .fade {
+    animation: fadeOnly .5s ease both;
+    animation-delay: var(--t);
+  }
+  @keyframes fadeOnly { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Shared type */
+  .huge { font-size: 230px; font-weight: 900; letter-spacing: -.05em; line-height: .9; text-transform: uppercase; }
+  .big { font-size: 110px; font-weight: 850; letter-spacing: -.04em; line-height: 1; }
+  .mid { font-size: 56px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+  .small { font-size: 34px; line-height: 1.4; color: var(--soft); font-weight: 500; }
+  .tag {
+    display: inline-block; font-size: 26px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    padding: 12px 22px; border-radius: 999px; background: var(--ink); color: var(--paper);
+  }
+  .o { color: var(--orange); }
+  .b { color: var(--blue); }
+
+  /* Scene 1: kinetic title */
+  .letters { display: flex; gap: 6px; }
+  .letters .mask { }
+
+  /* Scene 2: geometric avatar */
+  .avatar-wrap { position: relative; width: 640px; height: 640px; }
+  .avatar-wrap .ring {
+    position: absolute; inset: 0; border-radius: 50%; border: 10px solid var(--orange);
+    animation: pulse 1.6s ease-in-out infinite both;
+    animation-delay: var(--t);
+  }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: .6; } }
+  .avatar-wrap .head { position: absolute; left: 220px; top: 110px; width: 200px; height: 200px; border-radius: 50%; background: var(--ink); }
+  .avatar-wrap .body { position: absolute; left: 110px; top: 350px; width: 420px; height: 290px; border-radius: 50% 50% 0 0 / 60% 60% 0 0; background: var(--blue); }
+  .avatar-wrap .dot { position: absolute; top: 200px; width: 26px; height: 26px; border-radius: 50%; background: var(--paper); }
+  .avatar-wrap .eyeL { left: 268px; }
+  .avatar-wrap .eyeR { left: 346px; }
+  .avatar-wrap .mouth {
+    position: absolute; left: 280px; top: 250px; width: 80px; height: 18px; border-radius: 9px; background: var(--orange);
+    transform-origin: center; animation: talk .2s ease-in-out infinite alternate both; animation-delay: var(--t);
+  }
+  @keyframes talk { from { transform: scaleY(.3); } to { transform: scaleY(2.2); } }
+
+  /* Scene 3: rotating use-case word */
+  .swap { position: relative; height: 130px; width: 1600px; }
+  .swap span {
+    position: absolute; left: 0; right: 0; top: 0; font-size: 120px; font-weight: 900; letter-spacing: -.04em;
+    opacity: 0; animation: wordIn 2.6s ease both; animation-delay: var(--t);
+  }
+  @keyframes wordIn {
+    0% { opacity: 0; transform: translateY(40px); }
+    10% { opacity: 1; transform: none; }
+    85% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-40px); }
+  }
+
+  /* Scene 4: checklist */
+  .checks { display: flex; flex-direction: column; gap: 34px; width: 1000px; }
+  .check { display: flex; align-items: center; gap: 38px; font-size: 58px; font-weight: 750; letter-spacing: -.02em; }
+  .box {
+    position: relative; flex: none; width: 96px; height: 96px; border-radius: 22px; border: 6px solid var(--ink); background: #fff;
+  }
+  .box::after {
+    content: ""; position: absolute; left: 24px; top: 6px; width: 28px; height: 56px;
+    border-right: 12px solid var(--orange); border-bottom: 12px solid var(--orange);
+    transform: rotate(45deg) scale(0); transform-origin: center;
+    animation: tick .4s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--t2);
+  }
+  @keyframes tick { to { transform: rotate(45deg) scale(1); } }
+
+  /* Scene 5: language chips */
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 28px; width: 1400px; }
+  .chip {
+    font-size: 58px; font-weight: 800; letter-spacing: -.02em; padding: 24px 46px; border-radius: 999px; border: 6px solid var(--ink);
+  }
+
+  /* Scene 6: closing */
+  .sticker {
+    position: absolute; right: 80px; bottom: 80px; width: 300px; height: 300px; border-radius: 50%;
+    background: var(--mint); display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 40px; font-weight: 900; line-height: 1.05; letter-spacing: -.02em; border: 6px solid var(--ink);
+    transform: rotate(-12deg);
+  }
+
+  .frame { position: absolute; left: 0; right: 0; top: 0; height: 18px; background: var(--ink); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .corner { position: absolute; left: 120px; top: 80px; font-size: 26px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .pagenum { position: absolute; right: 120px; top: 80px; font-size: 26px; font-weight: 800; letter-spacing: .12em; }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .left { position: absolute; left: 150px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+</style>
+</head>
+<body>
+
+  <div class="frame"></div>
+  <div class="corner">AI avatars</div>
+  <div class="pagenum">Made simple</div>
+
+  <!-- SCENE 1 · Kinetic title · 0–5s -->
+  <section class="scene" style="--s:0s; --d:5.3s">
+    <div class="center">
+      <div class="letters huge">
+        <span class="mask"><span class="slide" style="--t:.2s">AI</span></span>
+        <span class="mask">&nbsp;<span class="slide o" style="--t:.45s">AVA</span></span>
+        <span class="mask"><span class="slide" style="--t:.7s">TARS</span></span>
+      </div>
+      <div class="mid fade" style="--t:1.6s; margin-top:50px">Video that talks, without a camera crew.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · What it is · 5–12s -->
+  <section class="scene" style="--s:5s; --d:7.3s">
+    <div class="left" style="left:200px">
+      <span class="mask"><span class="slide tag" style="--t:5.3s">What it is</span></span>
+      <span class="mask" style="margin-top:36px"><span class="slide big" style="--t:5.6s">A digital twin</span></span>
+      <span class="mask"><span class="slide big o" style="--t:5.9s">of your presenter.</span></span>
+      <div class="small fade" style="--t:6.8s; margin-top:40px; max-width:820px">Built from a short recording of a real person. It reads any script you give it, in their look and voice.</div>
+    </div>
+    <div style="position:absolute; right:120px; top:200px">
+      <div class="avatar-wrap pop" style="--t:5.6s">
+        <div class="ring" style="--t:6.4s"></div>
+        <div class="body"></div>
+        <div class="head"></div>
+        <div class="dot eyeL"></div>
+        <div class="dot eyeR"></div>
+        <div class="mouth" style="--t:7s"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Who uses them · 12–20s -->
+  <section class="scene" style="--s:12s; --d:8.3s">
+    <div class="center">
+      <span class="mask"><span class="slide tag" style="--t:12.3s">Who uses them</span></span>
+      <div class="mask" style="margin-top:50px"><span class="slide big" style="--t:12.5s">Sales. Support.</span></div>
+      <div class="mask"><span class="slide big" style="--t:12.8s">Training. Marketing.</span></div>
+      <div class="swap" style="margin-top:60px">
+        <span class="o" style="--t:13s">Every outreach email</span>
+        <span class="b" style="--t:15.6s">Every onboarding video</span>
+        <span style="--t:18.2s">Every FAQ answer</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · How to make one · 20–30s -->
+  <section class="scene" style="--s:20s; --d:10.3s">
+    <div class="left" style="left:200px; width:560px">
+      <span class="mask"><span class="slide tag" style="--t:20.3s">How to make one</span></span>
+      <span class="mask" style="margin-top:30px"><span class="slide big" style="--t:20.5s">Four<br>steps.</span></span>
+    </div>
+    <div class="checks" style="position:absolute; right:120px; top:50%; transform:translateY(-50%)">
+      <div class="check fade" style="--t:21.2s"><span class="box" style="--t2:22.0s"></span>Record a 2-minute clip</div>
+      <div class="check fade" style="--t:22.4s"><span class="box" style="--t2:23.2s"></span>Add the script</div>
+      <div class="check fade" style="--t:23.6s"><span class="box" style="--t2:24.4s"></span>Choose a voice</div>
+      <div class="check fade" style="--t:24.8s"><span class="box" style="--t2:25.6s"></span>Review and export</div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Languages · 30–38s -->
+  <section class="scene" style="--s:30s; --d:8.3s">
+    <div class="center">
+      <span class="mask"><span class="slide tag" style="--t:30.3s">Localization</span></span>
+      <div class="mask" style="margin-top:44px"><span class="slide big" style="--t:30.5s">One presenter.</span></div>
+      <div class="mask"><span class="slide big o" style="--t:30.8s">Many languages.</span></div>
+      <div class="chips" style="margin-top:56px">
+        <span class="chip pop" style="--t:31.4s">English</span>
+        <span class="chip pop" style="--t:31.6s">Español</span>
+        <span class="chip pop" style="--t:31.8s">Français</span>
+        <span class="chip pop" style="--t:32.0s">Deutsch</span>
+        <span class="chip pop" style="--t:32.2s">日本語</span>
+        <span class="chip pop" style="--t:32.4s">Português</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 38–45s -->
+  <section class="scene hold" style="--s:38s; --d:7s">
+    <div class="center">
+      <div class="mask"><span class="slide huge" style="--t:38.3s">Make yours</span></div>
+      <div class="mask"><span class="slide huge o" style="--t:38.6s">this week.</span></div>
+      <div class="mid fade" style="--t:39.6s; margin-top:50px; max-width:1000px">Get written consent first. Then script it, render it, ship it.</div>
+    </div>
+    <div class="sticker pop" style="--t:40.2s">Consent first</div>
+  </section>
+
+</body>
+</html>

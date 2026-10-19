@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meet Your AI Presenter</title>
+<style>
+  :root {
+    --bg: #0a1628;
+    --panel: #12223d;
+    --line: #23406b;
+    --text: #f1f6ff;
+    --muted: #9db3d6;
+    --mint: #06d6a0;
+    --yellow: #ffd60a;
+    --pink: #ef476f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: var(--text); position: relative; }
+
+  .aura { position: absolute; width: 760px; height: 760px; border-radius: 50%; filter: blur(110px); opacity: .3; left: -160px; top: 120px; background: var(--mint); animation: breathe 6s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: scale(1.12); opacity: .18; } }
+  .grid { position: absolute; inset: 0; background-image: radial-gradient(rgba(157,179,214,.12) 1.5px, transparent 1.5px); background-size: 46px 46px; animation: gridMove 8s linear infinite; }
+  @keyframes gridMove { to { background-position: 46px 46px; } }
+
+  .scene { position: absolute; inset: 0; opacity: 0; animation: fadeScene var(--d) linear var(--s) both; }
+  .scene.hold { animation-name: fadeIn; }
+  @keyframes fadeScene { 0% { opacity: 0; } 3% { opacity: 1; } 96% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes fadeIn { 0% { opacity: 0; } 4% { opacity: 1; } 100% { opacity: 1; } }
+
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .pop { animation: pop .6s cubic-bezier(.3,1.5,.5,1) both; animation-delay: var(--t); }
+  @keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+  .slideR { animation: slideR .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--t); }
+  @keyframes slideR { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: none; } }
+
+  .chrome { position: absolute; left: 120px; top: 60px; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .progress { position: absolute; left: 0; bottom: 0; height: 8px; width: 100%; background: linear-gradient(90deg, var(--mint), var(--yellow), var(--pink)); transform-origin: left; animation: progress 45s linear both; }
+  @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ---------- presenter (persistent across scenes) ---------- */
+  .presenter { position: absolute; left: 90px; top: 210px; width: 480px; height: 660px; animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-12px); } }
+  .presenter svg { width: 480px; height: 660px; overflow: visible; }
+  .eye { transform-box: fill-box; transform-origin: center; animation: blink 4s infinite both; }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  .brow { transform-box: fill-box; transform-origin: center; animation: browUp .8s ease both; }
+  .brow.up { animation-delay: var(--t); }
+  @keyframes browUp { from { transform: translateY(0); } 50% { transform: translateY(-10px); } to { transform: translateY(0); } }
+  .head { transform-box: fill-box; transform-origin: center bottom; animation: nod 2.4s ease-in-out infinite; }
+  @keyframes nod { 50% { transform: rotate(-2.5deg); } }
+  .armA { transform-origin: 315px 380px; animation: wave .8s ease-in-out .6s 3 both, wave .8s ease-in-out 40.8s 3 both; }
+  @keyframes wave {
+    0% { transform: rotate(0); } 25% { transform: rotate(-150deg); } 50% { transform: rotate(-125deg); }
+    75% { transform: rotate(-150deg); } 100% { transform: rotate(0); }
+  }
+  .mouthRest { }
+  .talk {
+    transform-box: fill-box; transform-origin: center; opacity: 0;
+    animation: talkAnim .16s ease-in-out infinite alternate both, speakWin var(--dur) steps(1, end) var(--w) both;
+  }
+  @keyframes talkAnim { from { transform: scaleY(.25); } to { transform: scaleY(1.5); } }
+  @keyframes speakWin { 0% { opacity: 0; } 0.01% { opacity: 1; } 99.99% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* ---------- speech bubble + typed lines ---------- */
+  .bubble {
+    position: absolute; left: 640px; top: 210px; width: 1160px; padding: 56px 64px; border-radius: 40px;
+    background: var(--panel); border: 2px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.35);
+  }
+  .bubble::before { content: ""; position: absolute; left: -26px; top: 90px; width: 50px; height: 50px; background: var(--panel); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transform: rotate(45deg); }
+  .line { display: block; font-size: 52px; font-weight: 720; letter-spacing: -.02em; line-height: 1.25; white-space: nowrap; overflow: hidden; clip-path: inset(0 100% 0 0); animation: typeIn calc(var(--n) * 0.035s) steps(var(--n), end) var(--t) both; }
+  .line + .line { margin-top: 18px; }
+  @keyframes typeIn { to { clip-path: inset(0 0 0 0); } }
+  .line.dim { color: var(--muted); font-size: 40px; font-weight: 500; }
+
+  .label { display: inline-block; font-size: 24px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: 10px 20px; border-radius: 999px; border: 2px solid var(--mint); color: var(--mint); }
+  .h2 { font-size: 80px; font-weight: 820; letter-spacing: -.03em; line-height: 1.05; }
+
+  /* ---------- scene 2: script card ---------- */
+  .doc { position: absolute; left: 1080px; top: 230px; width: 700px; padding: 46px 50px; border-radius: 28px; background: #f1f6ff; color: #0a1628; box-shadow: 0 30px 80px rgba(0,0,0,.4); }
+  .doc .hd { font-size: 26px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #3b5b8a; margin-bottom: 26px; }
+  .doc .ln { font-size: 34px; line-height: 1.35; font-weight: 550; margin-bottom: 16px; clip-path: inset(0 100% 0 0); animation: typeIn calc(var(--n) * 0.03s) steps(var(--n), end) var(--t) both; white-space: nowrap; overflow: hidden; }
+  .doc .caret { display: inline-block; width: 4px; height: 36px; background: var(--pink); vertical-align: middle; animation: blink 1s steps(1) infinite; }
+
+  /* ---------- scene 3: app mock + cursor ---------- */
+  .app { position: absolute; left: 1080px; top: 230px; width: 700px; padding: 40px; border-radius: 28px; background: var(--panel); border: 2px solid var(--line); }
+  .app .hd { font-size: 26px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 26px; }
+  .btn { position: relative; display: flex; align-items: center; justify-content: space-between; font-size: 38px; font-weight: 760; padding: 26px 30px; border-radius: 20px; background: #0c1a30; border: 2px solid var(--line); margin-bottom: 20px; }
+  .btn .ck { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--line); position: relative; }
+  .btn.done { border-color: var(--mint); }
+  .btn.done .ck { background: var(--mint); border-color: var(--mint); animation: pop .4s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--t); }
+  .cursor { position: absolute; left: 0; top: 0; width: 44px; height: 44px; z-index: 5; animation: cursorMove 5s cubic-bezier(.6,0,.3,1) both; animation-delay: var(--t); }
+  @keyframes cursorMove {
+    0% { transform: translate(0,0); } 30% { transform: translate(-100px,90px); } 34% { transform: translate(-100px,90px); }
+    60% { transform: translate(-100px,220px); } 64% { transform: translate(-100px,220px); }
+    90% { transform: translate(-100px,350px); } 94% { transform: translate(-100px,350px); } 100% { transform: translate(-100px,350px); }
+  }
+  .cursor svg { width: 44px; height: 44px; }
+  .ripple { position: absolute; left: -26px; top: -26px; width: 52px; height: 52px; border-radius: 50%; border: 4px solid var(--yellow); opacity: 0; animation: ripple .6s ease-out both; animation-delay: var(--tr); }
+  @keyframes ripple { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(2.2); } }
+
+  /* ---------- scene 4: use-case chips ---------- */
+  .chips { position: absolute; left: 1080px; top: 240px; width: 700px; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .chip { padding: 40px 36px; border-radius: 26px; background: var(--panel); border: 2px solid var(--line); font-size: 40px; font-weight: 780; letter-spacing: -.02em; }
+  .chip small { display: block; font-size: 26px; font-weight: 500; color: var(--muted); margin-top: 10px; }
+  .chip.float { animation: floaty 3.6s ease-in-out infinite; animation-delay: var(--t); }
+  @keyframes floaty { 50% { transform: translateY(-14px); } }
+
+  /* ---------- scene 5: render ---------- */
+  .render { position: absolute; left: 1080px; top: 300px; width: 700px; }
+  .render .lbl { font-size: 34px; font-weight: 760; margin-bottom: 22px; }
+  .track { height: 40px; border-radius: 20px; background: var(--line); overflow: hidden; }
+  .track i { display: block; height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--mint), var(--yellow)); transform-origin: left; animation: fill 4.4s cubic-bezier(.5,0,.3,1) both; animation-delay: var(--t); }
+  @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .done-badge { margin-top: 40px; font-size: 56px; font-weight: 850; color: var(--mint); opacity: 0; animation: pop .6s cubic-bezier(.3,1.5,.5,1) both; animation-delay: var(--t); }
+  .dots span { display: inline-block; animation: dot 1.2s steps(1) infinite both; }
+  .dots span:nth-child(2) { animation-delay: .4s; }
+  .dots span:nth-child(3) { animation-delay: .8s; }
+  @keyframes dot { 0%, 100% { opacity: .2; } 33% { opacity: 1; } }
+
+  /* ---------- scene 6: close ---------- */
+  .cta { display: inline-block; margin-top: 60px; font-size: 52px; font-weight: 820; padding: 28px 60px; border-radius: 999px; background: var(--yellow); color: #0a1628; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.06); box-shadow: 0 0 0 26px rgba(255,214,10,0); } 0% { box-shadow: 0 0 0 0 rgba(255,214,10,.5); } }
+</style>
+</head>
+<body>
+  <div class="aura"></div>
+  <div class="grid"></div>
+  <div class="chrome">AI avatars · live demo</div>
+  <div class="progress"></div>
+
+  <!-- Persistent presenter -->
+  <div class="presenter">
+    <svg viewBox="0 0 400 500" aria-hidden="true">
+      <defs>
+        <radialGradient id="face" cx="45%" cy="40%" r="70%">
+          <stop offset="0" stop-color="#ffe2c4"/>
+          <stop offset="1" stop-color="#e8a57a"/>
+        </radialGradient>
+      </defs>
+      <!-- back arm (static) -->
+      <rect x="92" y="370" width="46" height="150" rx="23" fill="#06d6a0" opacity=".85"/>
+      <!-- body -->
+      <path d="M40 500 C40 380 110 340 200 340 C290 340 360 380 360 500 Z" fill="#06d6a0"/>
+      <path d="M160 340 L200 390 L240 340 Z" fill="#f1f6ff"/>
+      <!-- front arm (waves) -->
+      <g class="armA" id="armA">
+        <rect x="292" y="370" width="46" height="150" rx="23" fill="#06d6a0"/>
+      </g>
+      <!-- neck -->
+      <rect x="168" y="290" width="64" height="80" rx="26" fill="#e8a57a"/>
+      <!-- head -->
+      <g class="head">
+        <ellipse cx="200" cy="200" rx="110" ry="128" fill="url(#face)"/>
+        <path d="M86 196 C74 60 150 30 204 30 C270 30 330 66 316 196 C300 120 262 98 210 100 C160 102 110 118 86 196 Z" fill="#1d2f52"/>
+        <path d="M140 160 Q158 146 176 158" stroke="#1d2f52" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M224 158 Q242 146 260 160" stroke="#1d2f52" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <ellipse class="eye" cx="160" cy="200" rx="15" ry="19" fill="#0a1628"/>
+        <ellipse class="eye" cx="240" cy="200" rx="15" ry="19" fill="#0a1628"/>
+        <circle cx="134" cy="240" r="17" fill="#ef476f" opacity=".25"/>
+        <circle cx="266" cy="240" r="17" fill="#ef476f" opacity=".25"/>
+        <path d="M200 214 Q192 244 206 250" stroke="#b86f48" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- resting smile (visible when not speaking) -->
+        <path d="M164 276 Q200 300 236 276" stroke="#8b2e3c" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <!-- speaking mouths, each shows during its window -->
+        <ellipse class="talk" style="--w:.8s; --dur:4.7s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+        <ellipse class="talk" style="--w:6.8s; --dur:2.8s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+        <ellipse class="talk" style="--w:14.8s; --dur:2.4s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+        <ellipse class="talk" style="--w:24.8s; --dur:8.2s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+        <ellipse class="talk" style="--w:34.8s; --dur:5s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+        <ellipse class="talk" style="--w:40.8s; --dur:3.4s" cx="200" cy="278" rx="34" ry="14" fill="#8b2e3c"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- SCENE 1 · Hook · 0–6s -->
+  <section class="scene" style="--s:0s; --d:6.3s">
+    <div class="bubble">
+      <span class="label rise" style="--t:.4s">Hi, I'm your presenter</span>
+      <div style="margin-top:36px">
+        <span class="line" style="--n:31; --t:.9s">Hi there. I'm an AI avatar.</span>
+        <span class="line" style="--n:38; --t:3.0s">I'm not a real person. That's the point.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 2 · Script in · 6–14s -->
+  <section class="scene" style="--s:6s; --d:8.3s">
+    <div class="bubble" style="width:380px; height:auto; padding:50px 44px">
+      <span class="line dim" style="--n:24; --t:6.8s; white-space:normal; font-size:40px">Give me a script and I'll say it for you.</span>
+    </div>
+    <div class="doc">
+      <div class="hd">Your script</div>
+      <div class="ln" style="--n:30; --t:7.6s">Welcome to the new onboarding.</div>
+      <div class="ln" style="--n:36; --t:9.4s">Here is how to request time off.</div>
+      <div class="ln" style="--n:28; --t:11.4s">Update one line, and re-render.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · Interactive app · 14–24s -->
+  <section class="scene" style="--s:14s; --d:10.3s">
+    <div class="bubble" style="width:1000px; height:auto; padding:50px 44px">
+      <span class="line" style="--n:14; --t:14.6s; font-size:50px">Click, click, render.</span>
+    </div>
+    <div class="app">
+      <div class="hd">Create your avatar</div>
+      <div class="btn done" style="--t:16.7s">1 · Upload a clip <span class="ck"></span></div>
+      <div class="btn done" style="--t:18.2s">2 · Choose a voice <span class="ck"></span></div>
+      <div class="btn done" style="--t:19.7s">3 · Render <span class="ck"></span></div>
+    </div>
+    <!-- cursor path: to button 1, button 2, button 3 -->
+    <div class="cursor" style="--t:14.8s; left:1500px; top:270px">
+      <div class="ripple" style="--tr:16.5s"></div>
+      <div class="ripple" style="--tr:18s"></div>
+      <div class="ripple" style="--tr:19.5s"></div>
+      <svg viewBox="0 0 44 44"><path d="M8 4 L8 36 L16 28 L22 40 L27 38 L21 26 L32 26 Z" fill="#f1f6ff" stroke="#0a1628" stroke-width="2.5"/></svg>
+    </div>
+  </section>
+
+  <!-- SCENE 4 · Use cases · 24–34s -->
+  <section class="scene" style="--s:24s; --d:10.3s">
+    <div class="bubble" style="width:380px; padding:50px 44px">
+      <span class="line" style="--n:26; --t:24.6s; font-size:44px; white-space:normal">Sales, training, support. Any language.</span>
+    </div>
+    <div class="chips" style="top:210px">
+      <div class="chip pop" style="--t:25.2s">Sales outreach<small>A personal video intro for each prospect</small></div>
+      <div class="chip pop" style="--t:25.8s">Training<small>Change a line, re-render, no reshoot</small></div>
+      <div class="chip pop" style="--t:26.4s">Support<small>Answer FAQs any hour</small></div>
+      <div class="chip pop" style="--t:27s">Localization<small>One presenter, many languages</small></div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 · Render · 34–40s -->
+  <section class="scene" style="--s:34s; --d:6.3s">
+    <div class="bubble" style="width:400px; padding:50px 44px">
+      <span class="line dim" style="--n:44; --t:34.6s; white-space:normal; font-size:38px">Consent first. Always. Only use a likeness with written permission.</span>
+    </div>
+    <div class="render">
+      <div class="lbl rise" style="--t:34.4s">Rendering <span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="track"><i style="--t:35s"></i></div>
+      <div class="done-badge" style="--t:39.4s">Ready ✓</div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 · Close · 40–45s -->
+  <section class="scene hold" style="--s:40s; --d:5s">
+    <div style="position:absolute; left:660px; top:260px; width:1100px">
+      <div class="h2 rise" style="--t:40.6s">Your turn.</div>
+      <div class="h2 rise" style="--t:41s; color:var(--mint)">Make your own avatar.</div>
+      <div class="cta pop" style="--t:42s">Start now</div>
+    </div>
+  </section>
+
+  <!-- Cursor-click ripple timing for button 3 -->
+</body>
+</html>
