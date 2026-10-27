@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Lil Drip: Missed the Train</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  :root { --ink: #ffffff; --muted: #c9c9d6; --purple: #9b30ff; --red: #ff2d55; --bg: #07070b; --font: "Inter", "Helvetica Neue", Arial, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: var(--font); color: var(--ink); }
+  #root { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
+
+  .layer { position: absolute; inset: 0; opacity: 0; }
+  .art { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.55) 70%, rgba(0,0,0,.85) 100%); }
+
+  .title { position: absolute; left: 120px; bottom: 170px; font-size: 220px; font-weight: 900; letter-spacing: -.05em; line-height: .85; text-transform: uppercase; }
+  .title .pur { color: var(--purple); text-shadow: 0 0 60px rgba(155,48,255,.6); }
+  .line { position: absolute; left: 124px; bottom: 90px; font-size: 52px; font-weight: 650; color: var(--muted); }
+
+  .card { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); padding: 54px 84px; border-radius: 34px; background: rgba(10,10,16,.82); border: 3px solid rgba(255,255,255,.14); font-size: 84px; font-weight: 850; letter-spacing: -.03em; white-space: nowrap; }
+  .card small { display: block; font-size: 30px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--purple); margin-bottom: 18px; }
+
+  .tag { position: absolute; right: 120px; top: 110px; padding: 14px 28px; border-radius: 999px; font-size: 30px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; border: 3px solid #fff; background: rgba(0,0,0,.45); }
+  .tag.red { border-color: var(--red); color: var(--red); }
+
+  .red-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255,45,85,0) 35%, rgba(255,45,85,.55) 100%); mix-blend-mode: screen; opacity: 0; }
+
+  /* purple drip transition: a sheet of paint with drips hanging off the bottom */
+  .paint { position: absolute; left: -100px; top: -100px; width: 2120px; height: 1280px; background: var(--purple); transform-origin: top center; transform: scaleY(0); }
+  .drip { position: absolute; bottom: -10px; width: 90px; border-radius: 0 0 45px 45px; background: var(--purple); transform-origin: top center; transform: scaleY(0); }
+  .stripe { position: absolute; left: 0; right: 0; top: 0; height: 100%; background: linear-gradient(90deg, #5b00d9, #9b30ff 60%, #c77dff); }
+
+  .sheet { object-fit: contain; background: #d9d9de; }
+  .zoomframe { position: absolute; overflow: hidden; border-radius: 0; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+
+  <!-- 1 · Chill hook, 0–4s -->
+  <section class="layer clip" id="s1" data-start="0" data-duration="4" data-track-index="0">
+    <img class="art" src="assets/chill.jpg" id="chillA">
+    <div class="shade"></div>
+    <div class="title" id="titleA">Lil<br><span class="pur">Drip</span></div>
+    <div class="line" id="lineA">Missed the train. Not worried.</div>
+  </section>
+
+  <!-- 2 · The sign, 4–8s -->
+  <section class="layer clip" id="s2" data-start="4" data-duration="4" data-track-index="0">
+    <img class="art" src="assets/chill.jpg" style="filter: blur(10px) brightness(.45);">
+    <div class="card" id="cardA" style="top: 36%;"><small>Platform announcement</small>Next train: 12 min</div>
+    <div class="card" id="cardB" style="top: 68%;"><small>Lil Drip</small>Cool.</div>
+  </section>
+
+  <!-- 3 · Purple drip wipe, 8–9.4s (no layer fade; it's a cover) -->
+  <section class="layer clip" id="s3" data-start="8" data-duration="1.4" data-track-index="0">
+    <div class="paint" id="paint"></div>
+    <div class="drip" id="d1" style="left:200px; height:620px;"></div>
+    <div class="drip" id="d2" style="left:620px; height:880px;"></div>
+    <div class="drip" id="d3" style="left:1040px; height:520px;"></div>
+    <div class="drip" id="d4" style="left:1430px; height:760px;"></div>
+  </section>
+
+  <!-- 4 · Crash-out punchline, 9.4–13s -->
+  <section class="layer clip" id="s4" data-start="9.4" data-duration="3.6" data-track-index="0">
+    <img class="art" src="assets/crashout.jpg" id="crashA">
+    <div class="shade" style="background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.7));"></div>
+    <div class="red-glow" id="glow"></div>
+    <div class="tag red" id="tagA">Crash-Out Mode</div>
+    <div class="title" style="font-size:150px; bottom:150px;" id="titleB">Then the app<br>said <span class="pur">"Delayed."</span></div>
+  </section>
+
+  <!-- 5 · The model sheet, 13–16.5s -->
+  <section class="layer clip" id="s5" data-start="13" data-duration="3.5" data-track-index="0">
+    <img class="art sheet" src="assets/sheet.jpg" id="sheetA" style="inset:0; width:100%; height:100%; object-fit:contain; top:50%; transform:translateY(-50%); left:0; background:#0b0b10;">
+    <div class="shade" style="background: linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 45%, rgba(0,0,0,.85) 100%);"></div>
+    <div class="title" style="font-size:120px; left:120px; top:110px; bottom:auto;" id="titleC">Three modes.<br><span class="pur">One face.</span></div>
+    <div class="line" style="bottom:110px;" id="lineB">Chill · Street · Crash-Out (used sparingly)</div>
+  </section>
+
+  <!-- 6 · Chill end card, 16.5–20s -->
+  <section class="layer clip" id="s6" data-start="16.5" data-duration="3.5" data-track-index="0">
+    <img class="art" src="assets/chill.jpg" id="chillB" style="filter: saturate(1.05);">
+    <div class="shade"></div>
+    <div class="title" style="font-size:180px;" id="titleD">Still chill.<br><span class="pur">Train's late.</span></div>
+  </section>
+</div>
+
+<script>
+  const tl = gsap.timeline({ paused: true });
+  const EASE = "power3.out";
+  const POP = "back.out(1.5)";
+
+  // Layers hold their final frame and fade in/out with a short cross-dissolve.
+  function layer(id, s, d) {
+    tl.set(id, { opacity: 0 }, 0);
+    tl.to(id, { opacity: 1, duration: 0.25, ease: "none" }, s);
+    if (id !== "#s3") tl.to(id, { opacity: 0, duration: 0.25, ease: "none" }, s + d - 0.25);
+  }
+  layer("#s1", 0, 4);  layer("#s2", 4, 4);  layer("#s4", 9.4, 3.6);
+  layer("#s5", 13, 3.5); layer("#s6", 16.5, 3.5);
+  tl.set("#s3", { opacity: 1 }, 8); tl.set("#s3", { opacity: 0 }, 9.4);
+
+  function slam(sel, t) { tl.fromTo(sel, { y: 60, opacity: 0, scale: 1.08 }, { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: EASE }, t); }
+  function pop(sel, t)  { tl.fromTo(sel, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: POP }, t); }
+
+  // Slow push-in on every still
+  tl.fromTo("#chillA", { scale: 1.0 }, { scale: 1.1, duration: 4, ease: "none" }, 0);
+  tl.fromTo("#chillB", { scale: 1.1 }, { scale: 1.0, duration: 3.5, ease: "none" }, 16.5);
+  tl.fromTo("#sheetA", { scale: 1.0 }, { scale: 1.08, duration: 3.5, ease: "none" }, 13);
+
+  // Scene 1 text
+  slam("#titleA", 0.3);
+  tl.fromTo("#lineA", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: EASE }, 1.4);
+
+  // Scene 2 cards: the sign, then the one-word reply
+  pop("#cardA", 4.3);
+  pop("#cardB", 6.1);
+
+  // Scene 3: purple paint sweeps down, drips follow, then covers the frame
+  tl.fromTo("#paint", { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "power2.in" }, 8.0);
+  [["#d1", 8.35], ["#d2", 8.45], ["#d3", 8.55], ["#d4", 8.5]].forEach(([s, t]) =>
+    tl.fromTo(s, { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "power1.out" }, t));
+  // paint then retracts upward to reveal the crash-out frame
+  tl.to("#paint", { scaleY: 0, transformOrigin: "bottom center", duration: 0.55, ease: "power2.inOut" }, 8.85);
+  tl.to(["#d1", "#d2", "#d3", "#d4"], { scaleY: 0, transformOrigin: "bottom center", duration: 0.4, ease: "power2.in" }, 8.9);
+  tl.set("#paint", { transformOrigin: "top center" }, 9.4);
+
+  // Scene 4: shake + red pulse, title punch
+  tl.fromTo("#crashA", { scale: 1.12 }, { scale: 1.0, duration: 3.6, ease: "power2.out" }, 9.4);
+  // Deterministic shake: a fixed sine pattern so every render is identical
+  for (let i = 0; 9.5 + i * 0.14 < 13; i++) {
+    const t = 9.5 + i * 0.14;
+    tl.to("#crashA", { x: Math.sin(i * 2.3) * 26, y: Math.cos(i * 1.7) * 16, duration: 0.07, ease: "none" }, t);
+  }
+  tl.to("#crashA", { x: 0, y: 0, duration: 0.1 }, 13);
+  tl.fromTo("#glow", { opacity: 0 }, { opacity: 0.9, duration: 0.25, ease: "power1.in", yoyo: true, repeat: 5 }, 9.4);
+  tl.fromTo("#tagA", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.4, ease: EASE }, 9.6);
+  slam("#titleB", 10.0);
+
+  // Scene 5 text
+  slam("#titleC", 13.3);
+  tl.fromTo("#lineB", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, 13.9);
+
+  // Scene 6 punchline
+  slam("#titleD", 16.8);
+
+  window.__timelines["main"] = tl;
+  tl.seek(0);
+</script>
+</body>
+</html>
