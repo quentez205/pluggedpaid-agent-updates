@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --ground: #0f1115;
+        --ink: #f5f5f5;
+        --muted: #8b93a7;
+        --accent: #3ddc97;
+        --card: #1a1d24;
+        --font-display: "Inter", "Helvetica Neue", Arial, sans-serif;
+        --font-mono: "JetBrains Mono", "Menlo", "Consolas", monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--ground); color: var(--ink);
+        font-family: var(--font-display);
+      }
+      .scene { position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 48px; opacity: 0; }
+      h1 { font-size: 104px; font-weight: 700; letter-spacing: -0.035em; text-align: center; }
+      h2 { font-size: 76px; font-weight: 650; letter-spacing: -0.03em; text-align: center; }
+      .step { font-size: 34px; color: var(--accent); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+      .sub { font-size: 40px; color: var(--muted); text-align: center; }
+      pre {
+        font-family: var(--font-mono); font-size: 34px; line-height: 1.55;
+        background: var(--card); border-radius: 22px; padding: 46px 60px;
+        width: 1200px; color: #cfd6e4; border: 1px solid #2a2f3a;
+      }
+      .k { color: #7aa2f7; } .s { color: #9ece6a; } .c { color: #565f89; }
+      .row { display: flex; gap: 40px; }
+      .box { width: 300px; height: 300px; border-radius: 34px; background: var(--card);
+        border: 2px solid #2a2f3a; display: flex; align-items: center; justify-content: center;
+        font-size: 150px; }
+      .label { font-size: 34px; color: var(--muted); margin-top: -20px; }
+      .bar { width: 1200px; height: 34px; border-radius: 17px; background: var(--card); overflow: hidden; }
+      .fill { height: 100%; width: 100%; background: var(--accent); transform-origin: left center; transform: scaleX(0); }
+      .pct { font-family: var(--font-mono); font-size: 40px; color: var(--accent); }
+      .brand { font-size: 48px; font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15"
+         data-width="1920" data-height="1080">
+
+      <section id="s1" class="scene clip" data-start="0" data-duration="3" data-track-index="0">
+        <h1>How this video was made</h1>
+      </section>
+
+      <section id="s2" class="scene clip" data-start="3" data-duration="4" data-track-index="0">
+        <div class="step">Step 1 · Write</div>
+        <pre><span class="c">&lt;!-- one HTML file = one scene --&gt;</span>
+<span class="k">&lt;h1&gt;</span>Plugged &amp; Paid<span class="k">&lt;/h1&gt;</span>
+<span class="k">tl.fromTo</span>(<span class="s">"h1"</span>, { opacity: 0 }, { opacity: 1 });</pre>
+      </section>
+
+      <section id="s3" class="scene clip" data-start="7" data-duration="4" data-track-index="0">
+        <div class="step">Step 2 · Animate</div>
+        <div class="row">
+          <div class="box" id="b1">🎬</div>
+          <div class="box" id="b2">🎞️</div>
+          <div class="box" id="b3">🎥</div>
+        </div>
+        <div class="sub">GSAP timeline, seeked frame by frame</div>
+      </section>
+
+      <section id="s4" class="scene clip" data-start="11" data-duration="3" data-track-index="0">
+        <div class="step">Step 3 · Render</div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="pct" id="pct">0%</div>
+      </section>
+
+      <section id="s5" class="scene clip" data-start="14" data-duration="1" data-track-index="0">
+        <h2>Write it. Animate it. Render it.</h2>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const ease = "power3.out";
+
+      // Scene 1: title
+      tl.fromTo("#s1", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0)
+        .fromTo("#s1 h1", { y: 40, opacity: 0, filter: "blur(10px)" },
+                          { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.9, ease }, 0.2)
+        .to("#s1", { opacity: 0, duration: 0.4 }, 2.6);
+
+      // Scene 2: code
+      tl.fromTo("#s2", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 3)
+        .fromTo("#s2 .step, #s2 pre", { y: 30, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.7, ease, stagger: 0.15 }, 3.2)
+        .to("#s2", { opacity: 0, duration: 0.4 }, 6.6);
+
+      // Scene 3: three boxes pop in one after another
+      tl.fromTo("#s3", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 7)
+        .fromTo("#s3 .step, #s3 .sub", { y: 30, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.6, ease, stagger: 0.15 }, 7.2)
+        .fromTo(["#b1", "#b2", "#b3"], { scale: 0, rotation: -12, opacity: 0 },
+                { scale: 1, rotation: 0, opacity: 1, duration: 0.7, ease: "back.out(1.6)", stagger: 0.2 }, 7.4)
+        .to("#s3", { opacity: 0, duration: 0.4 }, 10.6);
+
+      // Scene 4: progress bar fills while the counter ticks
+      const counter = { v: 0 };
+      tl.fromTo("#s4", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 11)
+        .fromTo("#s4 .step", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease }, 11.2)
+        .fromTo("#fill", { scaleX: 0 }, { scaleX: 1, duration: 2.4, ease: "power1.inOut" }, 11.4)
+        .to(counter, { v: 100, duration: 2.4, ease: "power1.inOut",
+                       onUpdate: () => { document.getElementById("pct").textContent = Math.round(counter.v) + "%"; } }, 11.4)
+        .to("#s4", { opacity: 0, duration: 0.4 }, 14);
+
+      // Scene 5: closing line
+      tl.fromTo("#s5", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 14)
+        .fromTo("#s5 h2", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease }, 14.1);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
